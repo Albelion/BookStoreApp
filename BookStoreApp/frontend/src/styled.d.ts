@@ -1,15 +1,13 @@
 import 'styled-components';
-
+interface IMedia {
+  phone: string;
+  tablet: string;
+  pc: string;
+}
 declare module 'styled-components' {
   export interface DefaultTheme {
-    colors: {
-      primary: string;
-      secondary: string;
-    };
-    media: {
-      phone: string;
-      tablet: string;
-      pc: string;
-    };
+    bodyColor: string;
+    fontColor: string;
+    media: IMedia;
   }
 }
