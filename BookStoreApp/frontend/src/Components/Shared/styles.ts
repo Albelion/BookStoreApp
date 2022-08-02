@@ -40,10 +40,18 @@ export const StyledButton = styled.button<ButtonProps>`
 interface ContainerProps {
   position?: string;
   display?: string;
+  width?: string;
+  height?: string;
+  margin?: string;
+  padding?: string;
 }
 export const StyledContainer = styled.div<ContainerProps>`
   display: ${(props) => props.display || 'block'};
   position: ${(props) => props.position || 'static'};
+  width: ${(props) => props.width || 'auto'};
+  height: ${(props) => props.height || 'auto'};
+  margin: ${(props) => props.margin || '0px'};
+  padding: ${(props) => props.padding || '0px'};
 `;
 
 // Styled Flex Wrapper
@@ -52,10 +60,22 @@ interface WrapperProps {
   justifyContent?: string;
   alignItems?: string;
   gap?: string;
+  flex?: string;
+  flexDirection?: string;
+  width?: string;
+  heigth?: string;
+  margin?: string;
+  padding?: string;
 }
 export const StyledWrapper = styled.div<WrapperProps>`
   display: ${(props) => props.display || 'flex'};
   justify-content: ${(props) => props.justifyContent || 'space-between'};
   align-items: ${(props) => props.alignItems || 'center'};
   gap: ${(props) => props.gap || '1px'};
+  flex: ${(props) => props.flex || '0 1 auto'};
+  flex-direction: ${(props) => props.flexDirection || 'row'};
+  width: ${(props) => props.width || 'auto'};
+  height: ${(props) => props.heigth || 'auto'};
+  margin: ${(props) => props.margin || '0px'};
+  padding: ${(props) => props.padding || '0px'};
 `;
