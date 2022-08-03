@@ -11,7 +11,8 @@ const StyledLinkNavigation = styled(Link)`
   color: ${(props) => props.theme.fontColor};
   &:hover {
     cursor: pointer;
-    background-color: ${grey1};
+    background-color: ${(props) =>
+      props.theme.bodyColor === '#fff' ? grey1 : purple5};
     border-bottom: 2px solid ${purple5};
   }
 `;
@@ -30,6 +31,15 @@ const StyledMediaContainer = styled(StyledContainer)`
     display: none;
   } ;
 `;
+const StyledSwitchThemeButton = styled(StyledButton)`
+  background-color: transparent;
+  color: ${(props) => (props.theme.bodyColor === '#fff' ? 'black' : 'white')};
+  &:hover {
+    border-bottom: 2px solid ${purple5};
+    padding-bottom: 13px;
+    background-color: transparent;
+  }
+`;
 
 export const NavigationSection = ({
   onChangeTheme,
@@ -46,13 +56,13 @@ export const NavigationSection = ({
           </StyledWrapper>
         </StyledNavigation>
         <StyledWrapper>
-          <StyledButton onClick={() => onChangeTheme()}>
+          <StyledSwitchThemeButton onClick={() => onChangeTheme()}>
             {currentTheme.bodyColor === '#fff' ? (
               <MdOutlineLightMode size="20px" />
             ) : (
               <MdOutlineNightlight size="20px" />
             )}
-          </StyledButton>
+          </StyledSwitchThemeButton>
         </StyledWrapper>
       </StyledWrapper>
     </StyledMediaContainer>

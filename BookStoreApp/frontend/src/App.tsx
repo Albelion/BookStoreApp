@@ -6,6 +6,15 @@ import { primaryTheme, secondaryTheme } from './Components/Shared/theme';
 //import { StyledButton } from './Components/Shared/styles';
 import { Header } from './Components/Header/Header';
 import { Route, BrowserRouter, Routes } from 'react-router-dom';
+import { HomePage } from './Components/HomePage/HomePage';
+import { StyledWrapper, StyledContainer } from './Components/Shared/styles';
+import styled from 'styled-components';
+
+const StyledMainWrapperContainer = styled(StyledWrapper)`
+  max-width: 1140px;
+  margin: auto;
+  flex-direction: column;
+`;
 
 function App() {
   const [theme, setTheme] = useState('primary');
@@ -16,7 +25,14 @@ function App() {
     <ThemeProvider theme={theme === 'primary' ? primaryTheme : secondaryTheme}>
       <GlobalStyles />
       <BrowserRouter>
-        <Header onChangeTheme={themeToggler} />
+        <StyledContainer>
+          <StyledMainWrapperContainer>
+            <Header onChangeTheme={themeToggler} />
+            <Routes>
+              <Route path="" element={<HomePage />} />
+            </Routes>
+          </StyledMainWrapperContainer>
+        </StyledContainer>
       </BrowserRouter>
     </ThemeProvider>
   );

@@ -6,6 +6,7 @@ import {
   grey5,
   grey3,
   grey1,
+  purple5,
 } from '../Shared/styles';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
@@ -15,10 +16,15 @@ import { GoThreeBars, GoX } from 'react-icons/go';
 import { useState } from 'react';
 
 const StyledSearchButton = styled(StyledButton)`
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  border-radius: 3px;
   &:hover {
     border: none;
+    background-color: ${grey3};
   }
-  padding: 0px 10px;
+  padding: 4.5px 10px;
 `;
 
 const StyledLink = styled(Link)`
@@ -31,7 +37,8 @@ const StyledLink = styled(Link)`
   color: ${(props) => props.theme.fontColor};
   &:hover {
     cursor: pointer;
-    background-color: ${grey1};
+    background-color: ${(props) =>
+      props.theme.bodyColor === '#fff' ? grey1 : purple5};
   }
 `;
 const StyledSpanBlock = styled.span`
@@ -69,7 +76,8 @@ const StyledLinksBar = styled(Link)`
   color: ${(props) => props.theme.fontColor};
   &:hover {
     cursor: pointer;
-    background-color: ${grey1};
+    background-color: ${(props) =>
+      props.theme.bodyColor === '#fff' ? grey1 : purple5};
   }
 `;
 
@@ -86,7 +94,7 @@ export const SearchSection = () => {
     navigate(`search?criteria=${search}`);
   };
   return (
-    <StyledContainer width="100%">
+    <StyledContainer width="100%" padding="10px">
       <StyledWrapper>
         <StyledLink to="/">
           <StyledContainer>
@@ -97,7 +105,7 @@ export const SearchSection = () => {
         <StyledContainer position="relative" width="70%">
           <StyledSpanBlock>
             <form onSubmit={handleSubmit(submitForm)}>
-              <StyledWrapper gap="none">
+              <StyledWrapper gap="none" position="relative">
                 <StyledInput
                   {...register('search')}
                   name="search"

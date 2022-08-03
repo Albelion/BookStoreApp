@@ -3,11 +3,19 @@ import { NavigationSection } from './NavigationSection';
 import { SearchSection } from './SearchSection';
 import { StyledContainer, StyledWrapper } from '../Shared/styles';
 import styled from 'styled-components';
+import { purple1 } from '../Shared/styles';
 
 const HeaderMainWrapper = styled(StyledWrapper)`
-  max-width: 1140px;
   flex-direction: column;
-  margin: auto;
+  background-color: ${(props) => props.theme.bodyColor};
+`;
+const StyledStickyContainer = styled(StyledContainer)`
+  display: block;
+  position: sticky;
+  width: 100%;
+  margin: 10px 0px;
+  top: 0px;
+  z-index: 2;
 `;
 interface HeaderProps {
   onChangeTheme: () => void;
@@ -15,9 +23,9 @@ interface HeaderProps {
 
 export const Header = ({ onChangeTheme }: HeaderProps) => {
   return (
-    <StyledContainer
+    <StyledStickyContainer
       display="block"
-      position="fixed"
+      position="sticky"
       width="100%"
       margin="10px 0px"
     >
@@ -25,6 +33,6 @@ export const Header = ({ onChangeTheme }: HeaderProps) => {
         <SearchSection />
         <NavigationSection onChangeTheme={onChangeTheme} />
       </HeaderMainWrapper>
-    </StyledContainer>
+    </StyledStickyContainer>
   );
 };

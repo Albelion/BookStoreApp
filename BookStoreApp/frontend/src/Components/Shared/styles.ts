@@ -24,13 +24,14 @@ export const StyledButton = styled.button<ButtonProps>`
   border: none;
   padding: 15px 20px;
   font-size: 1rem;
+  box-sizing: border-box;
   cursor: pointer;
   &:focus {
     outline: none;
   }
   &:hover {
-    border-bottom: 2px solid ${purple5};
-    background-color: ${grey1};
+    background-color: ${(props) =>
+      props.theme.bodyColor === '#fff' ? grey1 : purple5};
   }
   align-self: ${(props) => props.align || 'stretch'};
   background-color: ${(props) => props.backgroundColor || 'white'};
@@ -53,10 +54,14 @@ export const StyledContainer = styled.div<ContainerProps>`
   margin: ${(props) => props.margin || '0px'};
   padding: ${(props) => props.padding || '0px'};
 `;
+export const StyledFixedWidthSectionContainer = styled(StyledContainer)`
+  max-width: 1140px;
+`;
 
 // Styled Flex Wrapper
 interface WrapperProps {
   display?: string;
+  position?: string;
   justifyContent?: string;
   alignItems?: string;
   gap?: string;
@@ -78,4 +83,5 @@ export const StyledWrapper = styled.div<WrapperProps>`
   height: ${(props) => props.heigth || 'auto'};
   margin: ${(props) => props.margin || '0px'};
   padding: ${(props) => props.padding || '0px'};
+  position: ${(props) => props.position || 'static'};
 `;
