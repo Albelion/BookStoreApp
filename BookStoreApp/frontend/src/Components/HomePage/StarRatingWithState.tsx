@@ -1,4 +1,4 @@
-import { TiStarOutline } from 'react-icons/ti';
+import { TiStarFullOutline } from 'react-icons/ti';
 import { StyledContainer } from '../Shared/styles';
 import styled from 'styled-components';
 import { useState } from 'react';
@@ -7,9 +7,12 @@ const StyledLabel = styled.label``;
 const StyledInputRadio = styled.input`
   display: none;
 `;
-const StyledStarOutline = styled(TiStarOutline)`
+const StyledStarOutline = styled(TiStarFullOutline)`
   cursor: poiner;
   transition: color 200ms;
+`;
+const StyledStarContainer = styled(StyledContainer)`
+  padding-top: 4px;
 `;
 
 type RatingState = number;
@@ -18,7 +21,7 @@ const StarRatingWithState = () => {
   const [rating, setRating] = useState<RatingState>(0);
   const [hover, setHover] = useState<RatingState>(0);
   return (
-    <StyledContainer>
+    <StyledStarContainer>
       {[...Array(5)].map((star, i) => {
         const ratingValue = i + 1;
         return (
@@ -38,7 +41,7 @@ const StarRatingWithState = () => {
           </StyledLabel>
         );
       })}
-    </StyledContainer>
+    </StyledStarContainer>
   );
 };
 export default StarRatingWithState;

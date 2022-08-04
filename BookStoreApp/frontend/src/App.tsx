@@ -9,6 +9,7 @@ import { Route, BrowserRouter, Routes } from 'react-router-dom';
 import { HomePage } from './Components/HomePage/HomePage';
 import { StyledWrapper, StyledContainer } from './Components/Shared/styles';
 import styled from 'styled-components';
+import { DetailsPage } from './Components/DetailsPage/DetailsPage';
 
 const StyledMainWrapperContainer = styled(StyledWrapper)`
   max-width: 1140px;
@@ -30,6 +31,7 @@ function App() {
             <Header onChangeTheme={themeToggler} />
             <Routes>
               <Route path="" element={<HomePage />} />
+              <Route path="books/:bookId" element={<DetailsPage />} />
             </Routes>
           </StyledMainWrapperContainer>
         </StyledContainer>

@@ -68,7 +68,7 @@ interface WrapperProps {
   flex?: string;
   flexDirection?: string;
   width?: string;
-  heigth?: string;
+  height?: string;
   margin?: string;
   padding?: string;
 }
@@ -80,7 +80,7 @@ export const StyledWrapper = styled.div<WrapperProps>`
   flex: ${(props) => props.flex || '0 1 auto'};
   flex-direction: ${(props) => props.flexDirection || 'row'};
   width: ${(props) => props.width || 'auto'};
-  height: ${(props) => props.heigth || 'auto'};
+  height: ${(props) => props.height || 'auto'};
   margin: ${(props) => props.margin || '0px'};
   padding: ${(props) => props.padding || '0px'};
   position: ${(props) => props.position || 'static'};

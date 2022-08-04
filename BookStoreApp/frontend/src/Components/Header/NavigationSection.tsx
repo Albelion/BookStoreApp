@@ -33,7 +33,7 @@ const StyledMediaContainer = styled(StyledContainer)`
 `;
 const StyledSwitchThemeButton = styled(StyledButton)`
   background-color: transparent;
-  color: ${(props) => (props.theme.bodyColor === '#fff' ? 'black' : 'white')};
+  color: ${(props) => props.theme.fontColor};
   &:hover {
     border-bottom: 2px solid ${purple5};
     padding-bottom: 13px;
