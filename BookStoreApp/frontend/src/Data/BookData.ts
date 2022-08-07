@@ -215,3 +215,21 @@ export const BookList: Book[] = [
     ],
   },
 ];
+const waitAsync = async (ms: number): Promise<void> => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
+export const getBookAsync = async (bookId: number): Promise<Book | null> => {
+  await waitAsync(500);
+  const result = BookList.filter((f) => f.id === bookId);
+  return result.length === 0 ? null : result[0];
+};
+export const getAllBooksAsync = async (): Promise<Book[]> => {
+  await waitAsync(300);
+  return BookList;
+};
+export const searchBooksAsync = async (criteria: string): Promise<Book[]> => {
+  await waitAsync(500);
+  return BookList.filter(
+    (f) => f.name.toLowerCase().indexOf(criteria.toLowerCase()) >= 0,
+  );
+};

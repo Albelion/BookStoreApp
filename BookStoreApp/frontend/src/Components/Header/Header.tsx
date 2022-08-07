@@ -19,9 +19,10 @@ const StyledStickyContainer = styled(StyledContainer)`
 `;
 interface HeaderProps {
   onChangeTheme: () => void;
+  numAddedToCart: number;
 }
 
-export const Header = ({ onChangeTheme }: HeaderProps) => {
+export const Header = ({ onChangeTheme, numAddedToCart }: HeaderProps) => {
   return (
     <StyledStickyContainer
       display="block"
@@ -30,7 +31,7 @@ export const Header = ({ onChangeTheme }: HeaderProps) => {
       margin="10px 0px"
     >
       <HeaderMainWrapper>
-        <SearchSection />
+        <SearchSection numAddedToCart={numAddedToCart} />
         <NavigationSection onChangeTheme={onChangeTheme} />
       </HeaderMainWrapper>
     </StyledStickyContainer>

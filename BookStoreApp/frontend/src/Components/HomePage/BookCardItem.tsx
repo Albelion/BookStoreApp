@@ -29,14 +29,17 @@ const CardTitle = styled.h2`
 `;
 export const BookImageStyled = styled.img`
   width: 100%;
-  height: 80%;
+  height: 100%;
   alt: 'Book';
   align-self: center;
   border-radius: 5%;
   margin-bottom: 5px;
   object-fit: cover;
 `;
-const StyledBookImageWrapper = styled(StyledContainer)``;
+const StyledBookImageWrapper = styled(StyledContainer)`
+  width: 320px;
+  height: 470px;
+`;
 export const BookRaitingStyle = styled.div`
   font-size: 2rem;
   font-weight: bold;
@@ -57,18 +60,18 @@ export const BookRaitingStyle = styled.div`
 // `;
 
 const StyledCardFoterInformation = styled(StyledWrapper)`
-  margin-bottom: 10px;
+  margin: 10px 0px;
   gap: 4px;
   align-items: start;
   border-top: 2px solid ${grey5};
 `;
 const StyledAutorInformationContainer = styled(StyledContainer)`
-  color: ${grey5};
-  font-size: 0.8em;
+  color: ${(props) => props.theme.fontColorSecondary};
+  font-size: 0.9em;
 `;
 const StyledLinkCard = styled(Link)`
   text-decoration: none;
-  color: ${(props) => props.theme.fontColor};
+  color: ${(props) => props.theme.fontColorPrimary};
   width: 100%;
   &:hover {
     cursor: pointer;
@@ -86,7 +89,7 @@ export const BookCardItem = ({ book }: Props) => {
   // };
   return (
     <BookCardStyled>
-      <StyledLinkCard to={`books/${book.id}`}>
+      <StyledLinkCard to={`/books/${book.id}`}>
         <StyledContainer padding="10px 20px 0px 20px">
           <StyledBookImageWrapper>
             <BookImageStyled

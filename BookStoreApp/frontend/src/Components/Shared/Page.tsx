@@ -8,12 +8,14 @@ interface PageProps {
 }
 const StyledSectionWrapper = styled.section`
   text-align: center;
+  width: 100%;
 `;
 const StyledTitleContainer = styled(StyledContainer)`
   font-size: 2rem;
   font-weight: bold;
   padding-top: 3vh;
   padding-bottom: 5vh;
+  width: 100%;
 `;
 
 export const Page = ({ title, children }: PageProps) => {

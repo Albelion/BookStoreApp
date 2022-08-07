@@ -1,5 +1,6 @@
 import { DefaultTheme } from 'styled-components';
 import { IMedia } from '../../styled';
+import { grey6, grey1 } from './styles';
 
 // Create theme with media
 const mediaSettings: IMedia = {
@@ -7,13 +8,17 @@ const mediaSettings: IMedia = {
   tablet: '(max-width: 768px) and (min-width:425px)',
   pc: '(min-width:768px)',
 };
-export const primaryTheme: DefaultTheme = {
+export const LightTheme: DefaultTheme = {
   bodyColor: '#fff',
-  fontColor: '#000',
+  fontColorPrimary: '#000',
+  fontColorSecondary: grey6,
+  nameOfTheme: 'light',
   media: mediaSettings,
 };
-export const secondaryTheme: DefaultTheme = {
+export const DarkTheme: DefaultTheme = {
   bodyColor: '#000',
-  fontColor: '#fff',
+  fontColorPrimary: '#fff',
+  fontColorSecondary: grey1,
+  nameOfTheme: 'dark',
   media: mediaSettings,
 };

@@ -17,14 +17,14 @@ import { useState } from 'react';
 
 const StyledSearchButton = styled(StyledButton)`
   position: absolute;
-  top: 1px;
+  top: 2px;
   right: 1px;
   border-radius: 3px;
   &:hover {
     border: none;
     background-color: ${grey3};
   }
-  padding: 4.5px 10px;
+  padding: 4.2px 10px;
 `;
 
 const StyledLink = styled(Link)`
@@ -34,11 +34,11 @@ const StyledLink = styled(Link)`
   align-items: center;
   gap: 5px;
   justify-content: space-between;
-  color: ${(props) => props.theme.fontColor};
+  color: ${(props) => props.theme.fontColorPrimary};
   &:hover {
     cursor: pointer;
     background-color: ${(props) =>
-      props.theme.bodyColor === '#fff' ? grey1 : purple5};
+      props.theme.nameOfTheme === 'light' ? grey1 : purple5};
   }
 `;
 const StyledSpanBlock = styled.span`
@@ -50,7 +50,6 @@ const StyledInput = styled.input`
   padding: 8px 10px;
   border: 1px solid ${grey5};
   border-radius: 3px;
-  color: ${grey3};
   :focus {
     outline-color: ${grey5};
   }
@@ -70,21 +69,34 @@ const StyledButtonBars = styled(StyledButton)`
     display: none;
   }
 `;
+const StyledMediaPhoneMenuLinks = styled(StyledWrapper)`
+  @media ${(props) => props.theme.media.pc} {
+    display: none;
+  }
+  @media ${(props) => props.theme.media.tablet} {
+    display: none;
+  } ;
+`;
 const StyledLinksBar = styled(Link)`
   padding: 10px 15px;
   text-decoration: none;
-  color: ${(props) => props.theme.fontColor};
+  color: ${(props) => props.theme.fontColorPrimary};
   &:hover {
     cursor: pointer;
     background-color: ${(props) =>
-      props.theme.bodyColor === '#fff' ? grey1 : purple5};
+      props.theme.nameOfTheme === 'light' ? grey1 : purple5};
   }
 `;
 
 type FormData = {
   search: string;
 };
-export const SearchSection = () => {
+
+interface SearchSectionProps {
+  numAddedToCart: number;
+}
+
+export const SearchSection = ({ numAddedToCart }: SearchSectionProps) => {
   const navigate = useNavigate();
   const { register, handleSubmit } = useForm<FormData>();
   const [searchParams] = useSearchParams();
@@ -114,7 +126,7 @@ export const SearchSection = () => {
                   defaultValue={criteria}
                 />
                 <StyledSearchButton>
-                  <BiSearchAlt2 size="20px" />
+                  <BiSearchAlt2 size="19px" />
                 </StyledSearchButton>
               </StyledWrapper>
             </form>
@@ -129,21 +141,22 @@ export const SearchSection = () => {
           </StyledContainer>
           <StyledContainer>Войти</StyledContainer>
         </StyledLinkWithMedia>
-        <StyledLinkWithMedia to="/">
+        <StyledLinkWithMedia to="cart">
           <StyledContainer>
             <BiCart size="30px" />
           </StyledContainer>
+          <StyledContainer>{numAddedToCart}</StyledContainer>
           <StyledContainer>Корзина</StyledContainer>
         </StyledLinkWithMedia>
       </StyledWrapper>
       {toggler && (
-        <StyledWrapper flexDirection="column">
+        <StyledMediaPhoneMenuLinks flexDirection="column">
           <StyledLinksBar to="/">Домой</StyledLinksBar>
           <StyledLinksBar to="/">Продукты</StyledLinksBar>
           <StyledLinksBar to="/">Обо мне</StyledLinksBar>
           <StyledLinksBar to="/">Войти</StyledLinksBar>
-          <StyledLinksBar to="/">Корзина</StyledLinksBar>
-        </StyledWrapper>
+          <StyledLinksBar to="cart">Корзина</StyledLinksBar>
+        </StyledMediaPhoneMenuLinks>
       )}
     </StyledContainer>
   );

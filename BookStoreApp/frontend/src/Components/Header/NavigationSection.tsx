@@ -8,11 +8,11 @@ import { MdOutlineLightMode, MdOutlineNightlight } from 'react-icons/md';
 const StyledLinkNavigation = styled(Link)`
   padding: 10px 15px;
   text-decoration: none;
-  color: ${(props) => props.theme.fontColor};
+  color: ${(props) => props.theme.fontColorPrimary};
   &:hover {
     cursor: pointer;
     background-color: ${(props) =>
-      props.theme.bodyColor === '#fff' ? grey1 : purple5};
+      props.theme.nameOfTheme === 'light' ? grey1 : purple5};
     border-bottom: 2px solid ${purple5};
   }
 `;
@@ -33,7 +33,7 @@ const StyledMediaContainer = styled(StyledContainer)`
 `;
 const StyledSwitchThemeButton = styled(StyledButton)`
   background-color: transparent;
-  color: ${(props) => props.theme.fontColor};
+  color: ${(props) => props.theme.fontColorPrimary};
   &:hover {
     border-bottom: 2px solid ${purple5};
     padding-bottom: 13px;
@@ -57,7 +57,7 @@ export const NavigationSection = ({
         </StyledNavigation>
         <StyledWrapper>
           <StyledSwitchThemeButton onClick={() => onChangeTheme()}>
-            {currentTheme.bodyColor === '#fff' ? (
+            {currentTheme.nameOfTheme === 'light' ? (
               <MdOutlineLightMode size="20px" />
             ) : (
               <MdOutlineNightlight size="20px" />

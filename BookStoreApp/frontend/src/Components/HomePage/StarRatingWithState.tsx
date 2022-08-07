@@ -25,7 +25,7 @@ const StarRatingWithState = () => {
       {[...Array(5)].map((star, i) => {
         const ratingValue = i + 1;
         return (
-          <StyledLabel>
+          <StyledLabel key={i}>
             <StyledInputRadio
               type="radio"
               name="rating"

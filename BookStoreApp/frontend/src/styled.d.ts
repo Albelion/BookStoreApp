@@ -7,7 +7,9 @@ interface IMedia {
 declare module 'styled-components' {
   export interface DefaultTheme {
     bodyColor: string;
-    fontColor: string;
+    fontColorPrimary: string;
+    fontColorSecondary: string;
+    nameOfTheme: string;
     media: IMedia;
   }
 }

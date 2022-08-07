@@ -19,12 +19,12 @@ const StarRatingView = ({ rating }: Props) => {
       {[...Array(5)].map((star, i) => {
         const ratingValue = i + 1;
         if (numStars >= ratingValue) {
-          return <TiStarFullOutline size="30px" color="#E7D926" />;
+          return <TiStarFullOutline key={i} size="30px" color="#E7D926" />;
         } else if (isHalfStar) {
           isHalfStar = false;
-          return <TiStarHalfOutline size="30px" color="#E7D926" />;
+          return <TiStarHalfOutline key={i} size="30px" color="#E7D926" />;
         } else {
-          return <TiStarOutline size="30px" color="#e4e5e9" />;
+          return <TiStarOutline key={i} size="30px" color="#e4e5e9" />;
         }
       })}
     </StyledContainer>
