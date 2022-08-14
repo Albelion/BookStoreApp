@@ -9,7 +9,8 @@ const mediaSettings: IMedia = {
   pc: '(min-width:768px)',
 };
 export const LightTheme: DefaultTheme = {
-  bodyColor: '#fff',
+  bodyColor: '#F6FAF7',
+  backgroundMain: '#fff',
   fontColorPrimary: '#000',
   fontColorSecondary: grey6,
   nameOfTheme: 'light',
@@ -17,6 +18,7 @@ export const LightTheme: DefaultTheme = {
 };
 export const DarkTheme: DefaultTheme = {
   bodyColor: '#000',
+  backgroundMain: '#000',
   fontColorPrimary: '#fff',
   fontColorSecondary: grey1,
   nameOfTheme: 'dark',

@@ -51,7 +51,7 @@ export const NavigationSection = ({
         <StyledNavigation>
           <StyledWrapper justifyContent="start">
             <StyledLinkNavigation to="/">Домой</StyledLinkNavigation>
-            <StyledLinkNavigation to="/">Продукты</StyledLinkNavigation>
+            <StyledLinkNavigation to="admin">Продукты</StyledLinkNavigation>
             <StyledLinkNavigation to="/">Обо мне</StyledLinkNavigation>
           </StyledWrapper>
         </StyledNavigation>

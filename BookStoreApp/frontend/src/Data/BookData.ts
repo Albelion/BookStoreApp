@@ -55,7 +55,7 @@ export const BookList: Book[] = [
     numberPages: 1103,
     publishYear: 2014,
     src: book2,
-    rating: 4.7,
+    rating: 3.3,
     price: 450,
     description:
       'Стивен Кинг приглашает читателей в жуткий мир тюремного блока смертников, откуда уходят, чтобы не вернуться, приоткрывает дверь',

@@ -15,6 +15,10 @@ import { Book } from './Data/BookData';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { CartPage } from './Components/CartPage/CartPage';
+import AdminPage from './Components/Admin/AdminPage';
+import EditPage from './Components/Admin/Edit/EditPage';
+import CreatePage from './Components/Admin/Create/CreatePage';
+import OrderPage from './Components/OrderPage/OrderPage';
 
 const StyledMainWrapperContainer = styled(StyledWrapper)`
   max-width: 1140px;
@@ -137,6 +141,23 @@ function App() {
                     onChangeQty={onChangeQtyBooks}
                     onRemove={onAllRemoveHandler}
                     storedBooks={addedToCart}
+                  />
+                }
+              />
+              <Route path="admin" element={<AdminPage />} />
+              <Route path="edit/:bookId" element={<EditPage />} />
+              <Route path="create" element={<CreatePage />} />
+              <Route
+                path="order"
+                element={
+                  <OrderPage
+                    orderSum={
+                      addedToCart.length !== 0
+                        ? addedToCart
+                            .map((s) => s.book.price * s.qty)
+                            .reduce((sum, current) => sum + current)
+                        : 0
+                    }
                   />
                 }
               />

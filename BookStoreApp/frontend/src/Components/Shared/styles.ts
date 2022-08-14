@@ -58,6 +58,19 @@ export const StyledFixedWidthSectionContainer = styled(StyledContainer)`
   max-width: 1140px;
   width: 100%;
 `;
+export const StyledInput = styled.input`
+  padding: 8px 10px;
+  border: 1px solid ${grey5};
+  border-radius: 3px;
+  :focus {
+    outline-color: ${grey5};
+  }
+  width: 100%;
+  height: 35px;
+`;
+export const StyledLabel = styled.label`
+  font-weight: bold;
+`;
 
 // Styled Flex Wrapper
 interface WrapperProps {
@@ -72,6 +85,7 @@ interface WrapperProps {
   height?: string;
   margin?: string;
   padding?: string;
+  flexWrap?: string;
 }
 export const StyledWrapper = styled.div<WrapperProps>`
   display: ${(props) => props.display || 'flex'};
@@ -85,4 +99,5 @@ export const StyledWrapper = styled.div<WrapperProps>`
   margin: ${(props) => props.margin || '0px'};
   padding: ${(props) => props.padding || '0px'};
   position: ${(props) => props.position || 'static'};
+  flex-wrap: ${(props) => props.flexWrap || 'no-wrap'};
 `;

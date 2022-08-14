@@ -123,12 +123,6 @@ export const DetailsPage = ({
   const [foundedBook, setFoundBook] = useState<Book | null>(null);
   // is Book added to Cart?
   const [isAddedToCart, setIsAddedToCart] = useState(false);
-  if (bookId) {
-    const isStored = storedBookInCart.find((f) => f.book.id === Number(bookId))
-      ? true
-      : false;
-    setIsAddedToCart(isStored);
-  }
 
   useEffect(() => {
     let cancelled: boolean = false;
@@ -140,6 +134,12 @@ export const DetailsPage = ({
     };
     if (bookId) {
       getBook(Number(bookId));
+      const isStored = storedBookInCart.find(
+        (f) => f.book.id === Number(bookId),
+      )
+        ? true
+        : false;
+      setIsAddedToCart(isStored);
     }
     return () => {
       cancelled = true;

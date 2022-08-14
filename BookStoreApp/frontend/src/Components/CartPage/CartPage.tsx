@@ -3,9 +3,9 @@ import { StoredBookInCart } from '../../App';
 import CartItem from './CartItem';
 import { useState, useEffect } from 'react';
 import { Book } from '../../Data/BookData';
-import { StyledWrapper, StyledContainer } from '../Shared/styles';
+import { StyledWrapper, StyledContainer, StyledButton } from '../Shared/styles';
 import styled from 'styled-components';
-
+import { Link } from 'react-router-dom';
 interface CartPageProps {
   storedBooks: StoredBookInCart[];
   onRemove: (book: Book) => void;
@@ -19,7 +19,10 @@ const StyledEmptyCartLabel = styled(StyledContainer)`
   padding: 2em;
   color: ${(props) => props.theme.fontColorSecondary};
 `;
-
+const StyledLink = styled(Link)`
+  text-decoration: none;
+  padding: 5px 8px;
+`;
 export const CartPage = ({
   storedBooks,
   onRemove,
@@ -57,6 +60,7 @@ export const CartPage = ({
           >
             <StyledContainer>Итоговая сумма:</StyledContainer>
             <StyledContainer>{totalPrice} р.</StyledContainer>
+            <StyledLink to="/order">Перейти к оформлению заказа</StyledLink>
           </StyledTotalPriceWrapper>
         </>
       ) : (

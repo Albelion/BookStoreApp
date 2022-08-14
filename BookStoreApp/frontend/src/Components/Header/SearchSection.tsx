@@ -103,7 +103,7 @@ export const SearchSection = ({ numAddedToCart }: SearchSectionProps) => {
   const [toggler, setToggler] = useState(false);
   const criteria = searchParams.get('criteria') || '';
   const submitForm = ({ search }: FormData) => {
-    navigate(`search?criteria=${search}`);
+    navigate(`search?criteria=${search}&page=1`);
   };
   return (
     <StyledContainer width="100%" padding="10px">
