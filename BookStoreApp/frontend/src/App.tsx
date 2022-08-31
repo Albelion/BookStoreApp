@@ -61,12 +61,12 @@ function App() {
   const onAddHandler = (book: Book) => {
     notifyOnAddToCart();
     const exist = addedToCart.find(
-      (storedBook) => storedBook.book.id === book.id,
+      (storedBook) => storedBook.book.bookId === book.bookId,
     );
     if (exist) {
       setAddedToCart(
         addedToCart.map((x) =>
-          x.book.id === book.id ? { ...exist, qty: exist.qty + 1 } : x,
+          x.book.bookId === book.bookId ? { ...exist, qty: exist.qty + 1 } : x,
         ),
       );
     } else setAddedToCart([...addedToCart, { book, qty: 1 }]);
@@ -90,12 +90,12 @@ function App() {
   // change qty books in cart
   const onChangeQtyBooks = (bookId: number, updQty: number) => {
     const exist = addedToCart.find(
-      (storedBook) => storedBook.book.id === bookId,
+      (storedBook) => storedBook.book.bookId === bookId,
     );
     if (exist) {
       setAddedToCart(
         addedToCart.map((x) =>
-          x.book.id === bookId ? { ...exist, qty: updQty } : x,
+          x.book.bookId === bookId ? { ...exist, qty: updQty } : x,
         ),
       );
     }
@@ -103,7 +103,7 @@ function App() {
 
   const onAllRemoveHandler = (book: Book) => {
     notifyOnRemove();
-    setAddedToCart(addedToCart.filter((x) => x.book.id !== book.id));
+    setAddedToCart(addedToCart.filter((x) => x.book.bookId !== book.bookId));
   };
   return (
     <ThemeProvider theme={theme === 'light' ? LightTheme : DarkTheme}>

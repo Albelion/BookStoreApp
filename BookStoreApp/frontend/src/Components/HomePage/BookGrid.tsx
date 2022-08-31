@@ -19,10 +19,12 @@ interface BookGridProps {
   books: Book[];
 }
 const BookListGrid = ({ books }: BookGridProps) => {
+  console.log('book length:');
+  console.log(Object.values(books).length);
   return (
-    <StyledBookGrid numGrid={books.length}>
-      {books.map((item) => (
-        <BookCardItem key={item.id} book={item} />
+    <StyledBookGrid numGrid={Object.values(books).length}>
+      {Object.values(books).map((item) => (
+        <BookCardItem key={item.bookId} book={item} />
       ))}
     </StyledBookGrid>
   );

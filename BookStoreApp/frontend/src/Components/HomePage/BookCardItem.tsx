@@ -1,12 +1,12 @@
 import React from 'react';
 import { Book } from '../../Data/BookData';
 import styled from 'styled-components';
-import bookPict from '../../BookImages/noimage.jpg';
 import { StyledWrapper, StyledContainer } from '../Shared/styles';
 //import { useNavigate } from 'react-router-dom';
 import StarRatingView from './StarRatingView';
 import { grey5 } from '../Shared/styles';
 import { Link } from 'react-router-dom';
+import { getAverageRating } from '../../Data/BookData';
 
 const BookCardStyled = styled(StyledWrapper)`
   flex-direction: column;
@@ -89,16 +89,18 @@ export const BookCardItem = ({ book }: Props) => {
   // };
   return (
     <BookCardStyled>
-      <StyledLinkCard to={`/books/${book.id}`}>
+      <StyledLinkCard to={`/books/${book.bookId}`}>
         <StyledContainer padding="10px 20px 0px 20px">
           <StyledBookImageWrapper>
             <BookImageStyled
-              src={book.src === 'noImage' ? bookPict : book.src}
+              src={
+                book.imageName === '' ? '/Images/noimage.jpg' : book.imageSrc
+              }
             />
           </StyledBookImageWrapper>
           <StyledCardFoterInformation flexDirection="column">
             <StyledWrapper justifyContent="center">
-              <StarRatingView rating={book.rating} />
+              <StarRatingView rating={getAverageRating(book.ratings)} />
             </StyledWrapper>
             <StyledContainer>
               <CardTitle>{book.name}</CardTitle>

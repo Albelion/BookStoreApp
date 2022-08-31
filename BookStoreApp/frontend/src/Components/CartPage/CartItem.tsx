@@ -1,7 +1,6 @@
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import { StoredBookInCart } from '../../App';
-import NoImage from '../../BookImages/noimage.jpg';
 import { StyledWrapper, StyledContainer, StyledButton } from '../Shared/styles';
 import React from 'react';
 import { grey3 } from '../Shared/styles';
@@ -118,7 +117,7 @@ const CartItem = ({ storedBook, onRemoveItem, onChangeQty }: CartItemProps) => {
   const [numItems, setNumItems] = useState(0);
   const onChangeHandle = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const numOfBooks = Number(event.target.value);
-    onChangeQty(storedBook.book.id, numOfBooks);
+    onChangeQty(storedBook.book.bookId, numOfBooks);
     setNumItems(() => numOfBooks);
   };
   useEffect(() => {
@@ -130,7 +129,9 @@ const CartItem = ({ storedBook, onRemoveItem, onChangeQty }: CartItemProps) => {
         <StyledImageWrapper>
           <StyledImageCartWrapper
             src={
-              storedBook.book.src === 'noImage' ? NoImage : storedBook.book.src
+              storedBook.book.imageName === ''
+                ? '/Images/noimage.jpg'
+                : storedBook.book.imageSrc
             }
           />
         </StyledImageWrapper>

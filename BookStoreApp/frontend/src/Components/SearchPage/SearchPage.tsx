@@ -3,29 +3,25 @@ import { useState, useEffect } from 'react';
 import { Page } from '../Shared/Page';
 import { useSearchParams } from 'react-router-dom';
 import BookGridList from '../HomePage/BookGrid';
-import { Book } from '../../Data/BookData';
-import { searchBooksAsync } from '../../Data/BookData';
+import { getBookListView, BookListView } from '../../Data/BookData';
 import PaginationSectionModern from '../Shared/PaginationSectionModern';
-import paginationIndex from '../Shared/paginationIndex';
 
 const SearchPage = () => {
   const [searchParams] = useSearchParams();
-  const [books, setBooks] = useState<Book[]>([]);
+  const [bookListView, setbookListView] = useState<BookListView | null>(null);
   const [booksLoading, setBooksLoading] = useState(true);
-  const [numOfAllBooks, setNumOfAllBooks] = useState(0);
-  const pageSize = 3;
   const search = searchParams.get('criteria') || '';
   const page = searchParams.get('page') || '';
 
   useEffect(() => {
     let cancelled = false;
     const doSearch = async (criteria: string) => {
-      const searchResults = await searchBooksAsync(criteria);
-      const numBooks = searchResults ? searchResults.length : 0;
-      setNumOfAllBooks(() => numBooks);
-      if (!cancelled) {
-        const indexArray = paginationIndex(numBooks, page, pageSize);
-        setBooks(searchResults.slice(indexArray[0], indexArray[1]));
+      const searchResults = await getBookListView(
+        criteria,
+        page ? Number(page) : 1,
+      );
+      if (!cancelled && searchResults) {
+        setbookListView(searchResults);
         setBooksLoading(false);
       }
     };
@@ -39,18 +35,18 @@ const SearchPage = () => {
       title={
         booksLoading
           ? 'Загрузка...'
-          : numOfAllBooks === 0
+          : bookListView
           ? `Для запроса "${search}" не найдено книг`
           : `Результаты поиска для "${search}"`
       }
     >
       {!booksLoading && (
         <>
-          <BookGridList books={books} />
+          <BookGridList books={bookListView!.bookList} />
           <PaginationSectionModern
-            pageSize={pageSize}
+            pageSize={bookListView!.pageInfo.pageSize}
             currentPage={page ? Number(page) : 1}
-            numOfAllBooks={numOfAllBooks}
+            numOfAllBooks={bookListView!.pageInfo.totalItems}
             search={search}
           />
         </>

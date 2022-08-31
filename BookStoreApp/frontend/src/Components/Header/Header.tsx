@@ -3,7 +3,6 @@ import { NavigationSection } from './NavigationSection';
 import { SearchSection } from './SearchSection';
 import { StyledContainer, StyledWrapper } from '../Shared/styles';
 import styled from 'styled-components';
-import { purple1 } from '../Shared/styles';
 
 const HeaderMainWrapper = styled(StyledWrapper)`
   flex-direction: column;

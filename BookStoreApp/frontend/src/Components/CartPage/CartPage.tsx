@@ -3,7 +3,7 @@ import { StoredBookInCart } from '../../App';
 import CartItem from './CartItem';
 import { useState, useEffect } from 'react';
 import { Book } from '../../Data/BookData';
-import { StyledWrapper, StyledContainer, StyledButton } from '../Shared/styles';
+import { StyledWrapper, StyledContainer } from '../Shared/styles';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 interface CartPageProps {
@@ -46,7 +46,7 @@ export const CartPage = ({
           {storedBooks.map((storedBook) => {
             return (
               <CartItem
-                key={storedBook.book.id}
+                key={storedBook.book.bookId}
                 onRemoveItem={onRemove}
                 storedBook={storedBook}
                 onChangeQty={onChangeQty}

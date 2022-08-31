@@ -1,11 +1,17 @@
 import styled from 'styled-components';
-import { Book } from '../../../Data/BookData';
+import {
+  Book,
+  getAverageRating,
+  deleteBookAsync,
+  getAllBooksAsync,
+} from '../../../Data/BookData';
 import TableData from './TableData';
 import TableHeader from './TableHeader';
 import { useEffect, useState } from 'react';
-import { StyledWrapper } from '../../Shared/styles';
+import { StyledWrapper, StyledButton, grey3, grey6 } from '../../Shared/styles';
 import { Link } from 'react-router-dom';
-import { grey3, grey6 } from '../../Shared/styles';
+import 'react-toastify/dist/ReactToastify.css';
+import { toast, ToastContainer } from 'react-toastify';
 
 const StyledTable = styled.table``;
 const StyledTableThead = styled.thead``;
@@ -17,12 +23,12 @@ const StyledLink = styled(Link)`
   text-decoration: none;
   padding: 5px 8px;
 `;
+const StyledDeleteButton = styled(StyledButton)`
+  padding: 5px 8px;
+`;
 
 const StyledEditLink = styled(StyledLink)`
   color: blue;
-`;
-const StyledDeleteLink = styled(StyledLink)`
-  color: red;
 `;
 const StyledCreateLink = styled(StyledLink)`
   margin-top: 20px;
@@ -44,6 +50,17 @@ export enum SortParams {
 interface TableProps {
   books: Book[];
 }
+const notifyToDeleteItem = () => {
+  toast.success('Книга удалена', {
+    position: 'bottom-right',
+    autoClose: 3000,
+    hideProgressBar: true,
+    closeOnClick: false,
+    pauseOnHover: false,
+    draggable: false,
+    progress: undefined,
+  });
+};
 
 const Table = ({ books }: TableProps) => {
   const [isActiveSort, setIsActiveSort] = useState({
@@ -73,7 +90,7 @@ const Table = ({ books }: TableProps) => {
     });
     switch (param) {
       case SortParams.BOOKID:
-        setSortedBooks(sortedBooks.sort((a, b) => a.id - b.id));
+        setSortedBooks(sortedBooks.sort((a, b) => a.bookId - b.bookId));
         break;
       case SortParams.NAME:
         setSortedBooks(sortedBooks.sort((a, b) => (a.name > b.name ? -1 : 1)));
@@ -84,9 +101,7 @@ const Table = ({ books }: TableProps) => {
         );
         break;
       case SortParams.NUMPAGE:
-        setSortedBooks(
-          sortedBooks.sort((a, b) => a.numberPages - b.numberPages),
-        );
+        setSortedBooks(sortedBooks.sort((a, b) => a.pageNumber - b.pageNumber));
         break;
       case SortParams.PUBLISH:
         setSortedBooks(
@@ -94,7 +109,11 @@ const Table = ({ books }: TableProps) => {
         );
         break;
       case SortParams.RATING:
-        setSortedBooks(sortedBooks.sort((a, b) => a.rating - b.rating));
+        setSortedBooks(
+          sortedBooks.sort(
+            (a, b) => getAverageRating(a.ratings) - getAverageRating(b.ratings),
+          ),
+        );
         break;
       case SortParams.PRICE:
         setSortedBooks(sortedBooks.sort((a, b) => a.price - b.price));
@@ -110,7 +129,7 @@ const Table = ({ books }: TableProps) => {
     });
     switch (param) {
       case SortParams.BOOKID:
-        setSortedBooks(sortedBooks.sort((a, b) => b.id - a.id));
+        setSortedBooks(sortedBooks.sort((a, b) => b.bookId - a.bookId));
         break;
       case SortParams.NAME:
         setSortedBooks(sortedBooks.sort((a, b) => (b.name > a.name ? -1 : 1)));
@@ -121,9 +140,7 @@ const Table = ({ books }: TableProps) => {
         );
         break;
       case SortParams.NUMPAGE:
-        setSortedBooks(
-          sortedBooks.sort((a, b) => b.numberPages - a.numberPages),
-        );
+        setSortedBooks(sortedBooks.sort((a, b) => b.pageNumber - a.pageNumber));
         break;
       case SortParams.PUBLISH:
         setSortedBooks(
@@ -131,61 +148,89 @@ const Table = ({ books }: TableProps) => {
         );
         break;
       case SortParams.RATING:
-        setSortedBooks(sortedBooks.sort((a, b) => b.rating - a.rating));
+        setSortedBooks(
+          sortedBooks.sort(
+            (a, b) => getAverageRating(b.ratings) - getAverageRating(a.ratings),
+          ),
+        );
         break;
       case SortParams.PRICE:
         setSortedBooks(sortedBooks.sort((a, b) => b.price - a.price));
         break;
     }
   };
+  const onDeleteItem = (bookId: number) => {
+    const deleteAction = async () => {
+      const result = await deleteBookAsync(bookId);
+      if (result) {
+        notifyToDeleteItem();
+        const getUpdatedBookCollection = async () => {
+          const bookResult = await getAllBooksAsync();
+          if (bookResult) {
+            setSortedBooks(() => bookResult);
+          }
+        };
+        getUpdatedBookCollection();
+      }
+    };
+    deleteAction();
+  };
   return (
-    <StyledWrapper flexDirection="column" alignItems="start">
-      <StyledTable>
-        <StyledTableThead>
-          <StyledTableRow>
-            {SortParamsArray.map((x, i) => {
+    <>
+      <StyledWrapper flexDirection="column" alignItems="start">
+        <StyledTable>
+          <StyledTableThead>
+            <StyledTableRow>
+              {SortParamsArray.map((x, i) => {
+                return (
+                  <TableHeader
+                    key={i}
+                    onSortedUp={onSortedUp}
+                    onSortedDown={onSortedDown}
+                    sortParams={x}
+                    isVisible={isActiveSort.SortArray[i]}
+                    isUpSort={isActiveSort.isAsc}
+                  ></TableHeader>
+                );
+              })}
+            </StyledTableRow>
+          </StyledTableThead>
+          <StyledTableBody>
+            {sortedBooks.map((book, i) => {
+              let counter = sortedBooks.length * i;
               return (
-                <TableHeader
-                  key={i}
-                  onSortedUp={onSortedUp}
-                  onSortedDown={onSortedDown}
-                  sortParams={x}
-                  isVisible={isActiveSort.SortArray[i]}
-                  isUpSort={isActiveSort.isAsc}
-                ></TableHeader>
+                <StyledTableRow>
+                  <TableData key={++counter} inform={book.bookId} />
+                  <TableData key={++counter} inform={book.name} />
+                  <TableData key={++counter} inform={book.genre} />
+                  <TableData key={++counter} inform={book.pageNumber} />
+                  <TableData key={++counter} inform={book.publishYear} />
+                  <TableData
+                    key={++counter}
+                    inform={getAverageRating(book.ratings)}
+                  />
+                  <TableData key={++counter} inform={book.price} />
+                  <StyledTableDataEdit>
+                    <StyledWrapper>
+                      <StyledEditLink to={`/edit/${book.bookId}`}>
+                        Edit
+                      </StyledEditLink>
+                      <StyledDeleteButton
+                        onClick={() => onDeleteItem(book.bookId)}
+                      >
+                        Delete
+                      </StyledDeleteButton>
+                    </StyledWrapper>
+                  </StyledTableDataEdit>
+                </StyledTableRow>
               );
             })}
-          </StyledTableRow>
-        </StyledTableThead>
-        <StyledTableBody>
-          {sortedBooks.map((book, i) => {
-            let counter = sortedBooks.length * i;
-            return (
-              <StyledTableRow>
-                <TableData key={++counter} inform={book.id} />
-                <TableData key={++counter} inform={book.name} />
-                <TableData key={++counter} inform={book.genre} />
-                <TableData key={++counter} inform={book.numberPages} />
-                <TableData key={++counter} inform={book.publishYear} />
-                <TableData key={++counter} inform={book.rating} />
-                <TableData key={++counter} inform={book.price} />
-                <StyledTableDataEdit>
-                  <StyledWrapper>
-                    <StyledEditLink to={`/edit/${book.id}`}>
-                      Edit
-                    </StyledEditLink>
-                    <StyledDeleteLink to={`/delete/${book.id}`}>
-                      Delete
-                    </StyledDeleteLink>
-                  </StyledWrapper>
-                </StyledTableDataEdit>
-              </StyledTableRow>
-            );
-          })}
-        </StyledTableBody>
-      </StyledTable>
-      <StyledCreateLink to="/create">Add book</StyledCreateLink>
-    </StyledWrapper>
+          </StyledTableBody>
+        </StyledTable>
+        <StyledCreateLink to="/create">Add book</StyledCreateLink>
+      </StyledWrapper>
+      <ToastContainer />
+    </>
   );
 };
 export default Table;

@@ -1,35 +1,132 @@
-import book1 from '../BookImages/Dzhoan_Rouling__Garri_Potter_i_uznik_Azkabana.jpeg';
-import book2 from '../BookImages/Stiven_King__Zeljonaya_milya.jpeg';
-import book3 from '../BookImages/Margaret_Mitchell__Unesennye_vetrom_komplekt_iz_2h_knig.jpeg';
-import book4 from '../BookImages/Artur_Konan_Dojl__Sherlok_Holms._Vse_povesti_i_rasskazy_o_syschike_No_1_sbornik.jpeg';
-import book5 from '../BookImages/Nora_Sakavich__Svita_korolya.jpeg';
-import book6 from '../BookImages/Ketrin_Stokett__Prisluga.jpeg';
-import book7 from '../BookImages/Dzhon_R._R._Tolkin__Vlastelin_Kolets_Vozvraschenie_korolya.jpeg';
-import book8 from '../BookImages/Aleksandr_Dyuma__Graf_MonteKristo.jpeg';
-import book9 from '../BookImages/Dzhordzh_Martin__Burya_mechej.jpeg';
-import book10 from '../BookImages/Stiven_King__Pobeg_iz_Shoushenka.jpeg';
+// import book1 from '../BookImages/Dzhoan_Rouling__Garri_Potter_i_uznik_Azkabana.jpeg';
+// import book2 from '../BookImages/Stiven_King__Zeljonaya_milya.jpeg';
+// import book3 from '../BookImages/Margaret_Mitchell__Unesennye_vetrom_komplekt_iz_2h_knig.jpeg';
+// import book4 from '../BookImages/Artur_Konan_Dojl__Sherlok_Holms._Vse_povesti_i_rasskazy_o_syschike_No_1_sbornik.jpeg';
+// import book5 from '../BookImages/Nora_Sakavich__Svita_korolya.jpeg';
+// import book6 from '../BookImages/Ketrin_Stokett__Prisluga.jpeg';
+// import book7 from '../BookImages/Dzhon_R._R._Tolkin__Vlastelin_Kolets_Vozvraschenie_korolya.jpeg';
+// import book8 from '../BookImages/Aleksandr_Dyuma__Graf_MonteKristo.jpeg';
+// import book9 from '../BookImages/Dzhordzh_Martin__Burya_mechej.jpeg';
+// import book10 from '../BookImages/Stiven_King__Pobeg_iz_Shoushenka.jpeg';
+import { http } from '../http';
 
+// book item
 export interface Book {
-  id: number;
+  bookId: number;
   name: string;
   genre: string;
-  numberPages: number;
+  pageNumber: number;
   publishYear: number;
-  autors: Autor[];
-  src: string;
-  rating: number;
-  description: string;
+  imageName: string;
+  imageSrc: string;
+  ratings: Rating[];
   price: number;
+  description: string;
+  autors: Autor[];
+}
+// all books from server
+export interface BookDataFromServer {
+  bookId: number;
+  name: string;
+  genre: string;
+  pageNumber: number;
+  publishYear: number;
+  imageName: string;
+  imageSrc: string;
+  ratings: Array<{
+    ratingId: number;
+    value: number;
+    qty: number;
+  }>;
+  price: number;
+  description: string;
+  autors: Array<{
+    autorId: number;
+    name: string;
+  }>;
+}
+// information about pagination
+export interface PageInfo {
+  totalItems: number;
+  currentPage: number;
+  pageSize: number;
+  criteria?: string;
+}
+
+// Book list with search and pagination
+export interface BookListView {
+  bookList: Book[];
+  pageInfo: PageInfo;
+}
+// Book list from server with search and pagination
+export interface BookListViewFromServer {
+  bookList: Array<{
+    bookId: number;
+    name: string;
+    genre: string;
+    pageNumber: number;
+    publishYear: number;
+    imageName: string;
+    imageSrc: string;
+    ratings: Array<{
+      ratingId: number;
+      value: number;
+      qty: number;
+    }>;
+    price: number;
+    description: string;
+    autors: Array<{
+      autorId: number;
+      name: string;
+    }>;
+  }>;
+  pageInfo: PageInfo;
 }
 export interface Autor {
-  id: number;
+  autorId: number;
   name: string;
+}
+export interface Rating {
+  ratingId: number;
+  value: number;
+  qty: number;
 }
 export interface BooksCollection {
   books: Book[] | null;
 }
+export const mapBookFromServer = (book: BookDataFromServer): Book => ({
+  ...book,
+});
+export const mapBookListViewFromServer = (
+  bookListView: BookListViewFromServer,
+): BookListView => {
+  console.log(typeof bookListView);
+  console.log(typeof bookListView.bookList);
+  return {
+    bookList: {
+      ...bookListView.bookList.map((book) => ({
+        ...book,
+        autors: book.autors.map((autors) => ({ ...autors })),
+        rating: book.ratings.map((rating) => ({ ...rating })),
+      })),
+    },
+    pageInfo: bookListView.pageInfo,
+  };
+};
+export const getAverageRating = (rating: Rating[]): number => {
+  return (
+    Math.round(
+      (rating
+        .map((x) => x.value * x.qty)
+        .reduce((sum, current) => sum + current) /
+        rating.map((x) => x.qty).reduce((sum, current) => sum + current)) *
+        10,
+    ) / 10
+  );
+};
 
-export const BookList: Book[] = [
+/*export const BookList: Book[] = [
+
   {
     id: 1,
     name: 'Гарри Поттер и узник Азкабана',
@@ -214,22 +311,162 @@ export const BookList: Book[] = [
       },
     ],
   },
-];
-const waitAsync = async (ms: number): Promise<void> => {
+];*/
+
+/*const waitAsync = async (ms: number): Promise<void> => {
   return new Promise((resolve) => setTimeout(resolve, ms));
-};
+};*/
+
+// get Book with id
 export const getBookAsync = async (bookId: number): Promise<Book | null> => {
-  await waitAsync(500);
-  const result = BookList.filter((f) => f.id === bookId);
-  return result.length === 0 ? null : result[0];
+  const result = await http<BookDataFromServer>(
+    { path: `/books/${bookId}` },
+    false,
+  );
+  if (result.ok && result.body) {
+    return mapBookFromServer(result.body);
+  } else return null;
 };
 export const getAllBooksAsync = async (): Promise<Book[]> => {
-  await waitAsync(300);
-  return BookList;
-};
-export const searchBooksAsync = async (criteria: string): Promise<Book[]> => {
-  await waitAsync(500);
-  return BookList.filter(
-    (f) => f.name.toLowerCase().indexOf(criteria.toLowerCase()) >= 0,
+  const result = await http<BookDataFromServer[]>(
+    { path: '/books/allBooks' },
+    false,
   );
+  if (result.ok && result.body) {
+    return result.body.map(mapBookFromServer);
+  } else return [];
+};
+export const getBookListView = async (
+  criteria?: string,
+  page?: number,
+): Promise<BookListView | null> => {
+  if (criteria) {
+    const result = await http<BookListViewFromServer>(
+      {
+        path: `/books?criteria=${criteria}&page=${page}`,
+      },
+      false,
+    );
+    if (result.ok && result.body) {
+      return mapBookListViewFromServer(result.body);
+    } else return null;
+  } else {
+    const result = await http<BookListViewFromServer>(
+      {
+        path: `/books/page/${page}`,
+      },
+      false,
+    );
+    if (result.ok && result.body) {
+      console.log(typeof result.body);
+      return mapBookListViewFromServer(result.body);
+    } else return null;
+  }
+};
+
+// export interface Picture {
+//   imageName: string;
+//   imageSrc: string | ArrayBuffer | null | undefined;
+//   imageFile: object | null;
+// }
+
+// Create book on server
+export interface PostBookData {
+  name: string;
+  genre: string;
+  pageNumber: number;
+  publishYear: number;
+  imageFile: null | object;
+  price: number;
+  description: string;
+  rating?: number;
+  autors: Array<{
+    name: string;
+  }>;
+}
+
+// Test 1 post data to server
+// easy interface
+
+export const postBookAsync = async (
+  book: FormData,
+): Promise<Book | undefined> => {
+  const result = await http<BookDataFromServer, FormData>(
+    {
+      path: '/books',
+      method: 'post',
+      body: book,
+    },
+    true,
+  );
+  if (result.ok && result.body) {
+    return mapBookFromServer(result.body);
+  } else {
+    return undefined;
+  }
+};
+
+// Post books rating
+export interface postRatingData {
+  bookId: number;
+  value: number;
+}
+export const postRatingAsync = async (
+  rating: postRatingData,
+): Promise<Rating | undefined> => {
+  const result = await http<Rating, postRatingData>(
+    {
+      path: '/books/rating',
+      method: 'post',
+      body: rating,
+    },
+    false,
+  );
+  if (result.ok && result.body) {
+    return result.body;
+  } else {
+    return undefined;
+  }
+};
+
+// Edit book
+export interface PutBookData {
+  name: string;
+  genre: string;
+  pageNumber: number;
+  publishYear: number;
+  imageFile: object | null;
+  price: number;
+  description: string;
+  autors: string[];
+}
+export const editBookAsync = async (
+  bookId: number,
+  putBookData: FormData,
+): Promise<Book | null> => {
+  const result = await http<BookDataFromServer, FormData>(
+    {
+      path: `/books/${bookId}`,
+      method: 'put',
+      body: putBookData,
+    },
+    true,
+  );
+  if (result.ok && result.body) {
+    return mapBookFromServer(result.body);
+  } else return null;
+};
+
+// Delete book
+export const deleteBookAsync = async (bookId: number): Promise<Book | null> => {
+  const result = await http<BookDataFromServer>(
+    {
+      path: `/books/${bookId}`,
+      method: 'delete',
+    },
+    false,
+  );
+  if (result.ok && result.body) {
+    return mapBookFromServer(result.body);
+  } else return null;
 };

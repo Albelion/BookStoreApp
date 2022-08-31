@@ -5,12 +5,14 @@ import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { StyledWrapper, StyledContainer, StyledButton } from '../Shared/styles';
 import StarRatingWithState from '../HomePage/StarRatingWithState';
-import NoImage from '../../BookImages/noimage.jpg';
 import { TiStarFullOutline } from 'react-icons/ti';
 import { getBookAsync } from '../../Data/BookData';
 import { StoredBookInCart } from '../../App';
 import { BiCheck } from 'react-icons/bi';
 import { grey4, grey6 } from '../Shared/styles';
+import { getAverageRating } from '../../Data/BookData';
+import 'react-toastify/dist/ReactToastify.css';
+import { toast, ToastContainer } from 'react-toastify';
 
 interface BooksLoadingState {
   readonly loading: boolean;
@@ -19,6 +21,17 @@ interface BooksLoadingState {
 export interface AppState {
   readonly books: BooksLoadingState;
 }
+const notifyToSetStar = () => {
+  toast.success('Ваша оценка принята', {
+    position: 'bottom-right',
+    autoClose: 3000,
+    hideProgressBar: true,
+    closeOnClick: false,
+    pauseOnHover: false,
+    draggable: false,
+    progress: undefined,
+  });
+};
 
 const StyledImageDetailsWrapper = styled.img`
   width: 100%;
@@ -128,14 +141,14 @@ export const DetailsPage = ({
     let cancelled: boolean = false;
     const getBook = async (bookId: number) => {
       const foundedBook = await getBookAsync(bookId);
-      if (!cancelled) {
+      if (!cancelled && foundedBook) {
         setFoundBook(foundedBook);
       }
     };
     if (bookId) {
       getBook(Number(bookId));
       const isStored = storedBookInCart.find(
-        (f) => f.book.id === Number(bookId),
+        (f) => f.book.bookId === Number(bookId),
       )
         ? true
         : false;
@@ -144,7 +157,7 @@ export const DetailsPage = ({
     return () => {
       cancelled = true;
     };
-  }, [bookId]);
+  }, [bookId, storedBookInCart]);
   return (
     <Page title={foundedBook ? 'Информация о книге' : 'Поиск'}>
       {foundedBook !== null && (
@@ -153,7 +166,7 @@ export const DetailsPage = ({
             <StyledContainer>
               <BookTitleStyled>{foundedBook.name}</BookTitleStyled>
               <BookAutorStyled>
-                {foundedBook.autors.map((autor) => autor.name) + ' '}
+                {foundedBook.autors.map((autor) => autor.name + ' ')}
               </BookAutorStyled>
             </StyledContainer>
           </StyledMediaWrapperPhoneAndTabletTitle>
@@ -164,7 +177,11 @@ export const DetailsPage = ({
           >
             <StyledImageWrapper>
               <StyledImageDetailsWrapper
-                src={foundedBook.src === 'noImage' ? NoImage : foundedBook.src}
+                src={
+                  foundedBook.imageName === ''
+                    ? '/Images/noimage.jpg'
+                    : foundedBook.imageSrc
+                }
               />
             </StyledImageWrapper>
             <StyledMediaWrapperPc
@@ -181,12 +198,17 @@ export const DetailsPage = ({
               </StyledContainer>
               <StyledWrapper justifyContent="start" gap="15px">
                 <StyledWrapper>
-                  <StyledContainer>{foundedBook.rating}</StyledContainer>
+                  <StyledContainer>
+                    {getAverageRating(foundedBook.ratings)}
+                  </StyledContainer>
                   <TiStarFullOutline color="#ffc107" size="20px" />
                 </StyledWrapper>
                 <StyledWrapper>
                   <StyledContainer>Моя оценка: </StyledContainer>
-                  <StarRatingWithState />
+                  <StarRatingWithState
+                    bookId={foundedBook.bookId}
+                    notify={notifyToSetStar}
+                  />
                 </StyledWrapper>
               </StyledWrapper>
               <StyledWrapper gap="10px">
@@ -216,7 +238,7 @@ export const DetailsPage = ({
                   <StyledContainer>{foundedBook.genre}</StyledContainer>
                   <StyledContainer>{foundedBook.publishYear}</StyledContainer>
                   <StyledContainer>русский</StyledContainer>
-                  <StyledContainer>{foundedBook.numberPages}</StyledContainer>
+                  <StyledContainer>{foundedBook.pageNumber}</StyledContainer>
                 </StyledWrapper>
               </StyledWrapper>
               <StyledWrapper
@@ -250,12 +272,20 @@ export const DetailsPage = ({
           >
             <StyledWrapper justifyContent="start" gap="10px">
               <StyledWrapper>
-                <StyledContainer>{foundedBook.rating}</StyledContainer>
+                <StyledContainer>
+                  {foundedBook.ratings
+                    .map((x) => x.value)
+                    .reduce((sum, current) => sum + current) /
+                    foundedBook.ratings.length}
+                </StyledContainer>
                 <TiStarFullOutline color="#ffc107" size="20px" />
               </StyledWrapper>
               <StyledWrapper>
                 <StyledContainer>Моя оценка: </StyledContainer>
-                <StarRatingWithState />
+                <StarRatingWithState
+                  bookId={foundedBook.bookId}
+                  notify={notifyToSetStar}
+                />
               </StyledWrapper>
             </StyledWrapper>
             <StyledWrapper gap="10px">
@@ -285,7 +315,7 @@ export const DetailsPage = ({
                 <StyledContainer>{foundedBook.genre}</StyledContainer>
                 <StyledContainer>{foundedBook.publishYear}</StyledContainer>
                 <StyledContainer>русский</StyledContainer>
-                <StyledContainer>{foundedBook.numberPages}</StyledContainer>
+                <StyledContainer>{foundedBook.pageNumber}</StyledContainer>
               </StyledWrapper>
             </StyledWrapper>
             <StyledWrapper flexDirection="column" alignItems="start" gap="6px">
@@ -315,6 +345,7 @@ export const DetailsPage = ({
           </StyledContainer>
         </>
       )}
+      <ToastContainer />
     </Page>
   );
 };
