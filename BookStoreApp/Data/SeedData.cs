@@ -11,29 +11,29 @@ namespace BookStoreApp.Data{
             }
                 if(!context.Autors.Any()&& !context.Books.Any()&&!context.Ratings.Any()){
                         // Create autors
-                        Autor autor1 = new Autor{Name="Джоан Роулинг"};
-                        Autor autor2 = new Autor{Name="Стивен Кинг"};
-                        Autor autor3 = new Autor{Name="Маргарет Митчелл"};
-                        Autor autor4 = new Autor{Name="Артур Конан Дойл"};
-                        Autor autor5 = new Autor{Name="Нора Сакатович"};
-                        Autor autor6 = new Autor{Name="Кэтрин Стокетт"};
-                        Autor autor7 = new Autor{Name="Джон Р.Р. Толкин"};
-                        Autor autor8 = new Autor{Name="Александр Дюма"};
-                        Autor autor9 = new Autor{Name="Джордж Мартин"};
+                        Autor autor1 = new(){Name="Джоан Роулинг"};
+                        Autor autor2 = new(){Name="Стивен Кинг"};
+                        Autor autor3 = new(){Name="Маргарет Митчелл"};
+                        Autor autor4 = new(){Name="Артур Конан Дойл"};
+                        Autor autor5 = new(){Name="Нора Сакатович"};
+                        Autor autor6 = new(){Name="Кэтрин Стокетт"};
+                        Autor autor7 = new(){Name="Джон Р.Р. Толкин"};
+                        Autor autor8 = new(){Name="Александр Дюма"};
+                        Autor autor9 = new(){Name="Джордж Мартин"};
                         // Save autors in ctx
                         context.Autors.AddRange(autor1, autor2, autor3, autor4,autor5, autor6, autor7, autor8, autor9);
 
                         // Create ratings
-                        Rating rating1 = new Rating{Value=2.5};
-                        Rating rating2 = new Rating{Value=3.3};
-                        Rating rating3 = new Rating{Value=4.7};
-                        Rating rating4 = new Rating{Value=4.8};
-                        Rating rating5 = new Rating{Value=4.8};
-                        Rating rating6 = new Rating{Value=4.7};
-                        Rating rating7 = new Rating{Value=4.8};
-                        Rating rating8 = new Rating{Value=4.8};
-                        Rating rating9 = new Rating{Value=4.7};
-                        Rating rating10 = new Rating{Value=4.6};
+                        Rating rating1 = new() { Value=2.5};
+                        Rating rating2 = new() { Value=3.3};
+                        Rating rating3 = new() { Value=4.7};
+                        Rating rating4 = new() { Value=4.8};
+                        Rating rating5 = new() { Value=4.8};
+                        Rating rating6 = new() { Value=4.7};
+                        Rating rating7 = new() { Value=4.8};
+                        Rating rating8 = new() { Value=4.8};
+                        Rating rating9 = new() { Value=4.7};
+                        Rating rating10 = new() { Value=4.6};
                         // Save ratings in ctx
                         context.Ratings.AddRange(rating1, rating2, rating3, rating4, rating5, rating6, rating7, rating8, rating9, rating10);
 

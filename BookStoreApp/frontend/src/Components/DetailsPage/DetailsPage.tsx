@@ -7,10 +7,9 @@ import { StyledWrapper, StyledContainer, StyledButton } from '../Shared/styles';
 import StarRatingWithState from '../HomePage/StarRatingWithState';
 import { TiStarFullOutline } from 'react-icons/ti';
 import { getBookAsync } from '../../Data/BookData';
-import { StoredBookInCart } from '../../App';
 import { BiCheck } from 'react-icons/bi';
 import { grey4, grey6 } from '../Shared/styles';
-import { getAverageRating } from '../../Data/BookData';
+import { getAverageRating, CartItem } from '../../Data/BookData';
 import 'react-toastify/dist/ReactToastify.css';
 import { toast, ToastContainer } from 'react-toastify';
 
@@ -123,7 +122,7 @@ const StyledMediaWrapperPhoneAndTabletTitle = styled(
 `;
 interface DetailsPageProps {
   addToCart: (book: Book) => void;
-  storedBookInCart: StoredBookInCart[];
+  storedBookInCart: CartItem[];
 }
 
 export const DetailsPage = ({

@@ -19,9 +19,12 @@ namespace BookStoreApp
             builder.Services.AddDbContext<BookStoreDbContext>(opts=>{
                 opts.UseSqlServer(builder.Configuration["ConnectionStrings:BookStoreConnection"]);
             });
-            builder.Services.AddScoped<IStoreRepository, BookStoreRepository>();
+
             builder.Services.AddCors(option=>option.AddPolicy("CorsPolicy", corsBuilder=>
                 corsBuilder.AllowAnyMethod().AllowAnyHeader().WithOrigins(builder.Configuration["Frontend"])));
+            builder.Services.AddScoped<IStoreRepository, BookStoreRepository>();
+            builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
 
             var app = builder.Build();
 
@@ -32,6 +35,7 @@ namespace BookStoreApp
                 FileProvider = new PhysicalFileProvider(Path.Combine(builder.Environment.ContentRootPath, "Images")),
                 RequestPath = "/Images"
             });
+            
             app.UseRouting();
             app.UseCors("CorsPolicy");
 

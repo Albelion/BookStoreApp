@@ -1,15 +1,15 @@
 import { Page } from '../Shared/Page';
-import { StoredBookInCart } from '../../App';
-import CartItem from './CartItem';
-import { useState, useEffect } from 'react';
-import { Book } from '../../Data/BookData';
+//import { StoredBookInCart } from '../../App';
+import CartItemComp from './CartItemComp';
+//import { useState, useEffect } from 'react';
+import { CartItem } from '../../Data/BookData';
 import { StyledWrapper, StyledContainer } from '../Shared/styles';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 interface CartPageProps {
-  storedBooks: StoredBookInCart[];
-  onRemove: (book: Book) => void;
-  onChangeQty: (bookId: number, qty: number) => void;
+  cartItems: CartItem[];
+  onRemove: (bookId: number) => void;
+  onChangeQty: (bookId: number, quantity: number) => void;
 }
 const StyledTotalPriceWrapper = styled(StyledWrapper)`
   margin-right: 10px;
@@ -24,13 +24,12 @@ const StyledLink = styled(Link)`
   padding: 5px 8px;
 `;
 export const CartPage = ({
-  storedBooks,
+  cartItems,
   onRemove,
   onChangeQty,
 }: CartPageProps) => {
-  const [totalPrice, setTotalPrice] = useState(0);
   //const countHandler = () => {};
-  useEffect(() => {
+  /*useEffect(() => {
     if (storedBooks.length !== 0) {
       setTotalPrice(() =>
         storedBooks
@@ -38,14 +37,14 @@ export const CartPage = ({
           .reduce((sum, current) => sum + current),
       );
     }
-  }, [onRemove, onChangeQty, storedBooks]);
+  }, [onRemove, onChangeQty, storedBooks]); */
   return (
     <Page title="Корзина">
-      {storedBooks.length !== 0 ? (
+      {cartItems.length !== 0 ? (
         <>
-          {storedBooks.map((storedBook) => {
+          {cartItems.map((storedBook) => {
             return (
-              <CartItem
+              <CartItemComp
                 key={storedBook.book.bookId}
                 onRemoveItem={onRemove}
                 storedBook={storedBook}
@@ -59,7 +58,14 @@ export const CartPage = ({
             margin="5px 0px"
           >
             <StyledContainer>Итоговая сумма:</StyledContainer>
-            <StyledContainer>{totalPrice} р.</StyledContainer>
+            <StyledContainer>
+              {cartItems.length !== 0
+                ? cartItems
+                    .map((item) => item.book.price * item.quantity)
+                    .reduce((sum, current) => sum + current)
+                : 0}
+              р.
+            </StyledContainer>
             <StyledLink to="/order">Перейти к оформлению заказа</StyledLink>
           </StyledTotalPriceWrapper>
         </>

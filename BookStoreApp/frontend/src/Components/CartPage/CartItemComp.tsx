@@ -1,10 +1,8 @@
 import styled from 'styled-components';
-import { useEffect, useState } from 'react';
-import { StoredBookInCart } from '../../App';
 import { StyledWrapper, StyledContainer, StyledButton } from '../Shared/styles';
 import React from 'react';
 import { grey3 } from '../Shared/styles';
-import { Book } from '../../Data/BookData';
+import { CartItem } from '../../Data/BookData';
 
 const StyledImageCartWrapper = styled.img`
   width: 100%;
@@ -108,21 +106,24 @@ const StyledFirstPartInform = styled(StyledPositionInCart)`
   gap: 8px;
 `;
 interface CartItemProps {
-  storedBook: StoredBookInCart;
-  onRemoveItem: (book: Book) => void;
-  onChangeQty: (bookId: number, qty: number) => void;
+  storedBook: CartItem;
+  onRemoveItem: (bookId: number) => void;
+  onChangeQty: (bookId: number, quantity: number) => void;
 }
 
-const CartItem = ({ storedBook, onRemoveItem, onChangeQty }: CartItemProps) => {
-  const [numItems, setNumItems] = useState(0);
+const CartItemComp = ({
+  storedBook,
+  onRemoveItem,
+  onChangeQty,
+}: CartItemProps) => {
   const onChangeHandle = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const numOfBooks = Number(event.target.value);
     onChangeQty(storedBook.book.bookId, numOfBooks);
-    setNumItems(() => numOfBooks);
+    //setNumItems(() => numOfBooks);
   };
-  useEffect(() => {
+  /*useEffect(() => {
     setNumItems(() => storedBook.qty);
-  }, []);
+  }, []);*/
   return (
     <StyledContainer padding="0px 10px" margin="25px 0px">
       <StyledMainWrapperCart alignItems="top" justifyContent="start" gap="25px">
@@ -157,7 +158,7 @@ const CartItem = ({ storedBook, onRemoveItem, onChangeQty }: CartItemProps) => {
                 <StyledLabelContainer>Количество</StyledLabelContainer>
                 <StyledContainer>
                   <StyledSelectList
-                    value={String(numItems)}
+                    value={String(storedBook.quantity)}
                     onChange={onChangeHandle}
                   >
                     <option value="1">1</option>
@@ -171,13 +172,15 @@ const CartItem = ({ storedBook, onRemoveItem, onChangeQty }: CartItemProps) => {
               <StyledWrapper gap="4px" flexDirection="row">
                 <StyledLabelContainer>Итоговая сумма</StyledLabelContainer>
                 <StyledContainer>
-                  {storedBook.book.price * numItems} р.
+                  {storedBook.book.price * storedBook.quantity} р.
                 </StyledContainer>
               </StyledWrapper>
             </StyledMediaWrapperPhoneAndTablet>
             <StyledRemoveSection>
               <StyledWrapper gap="20px">
-                <StyledMenuButton onClick={() => onRemoveItem(storedBook.book)}>
+                <StyledMenuButton
+                  onClick={() => onRemoveItem(storedBook.book.bookId)}
+                >
                   Удалить
                 </StyledMenuButton>
                 <StyledMenuButton>Добавить в избранное</StyledMenuButton>
@@ -193,7 +196,7 @@ const CartItem = ({ storedBook, onRemoveItem, onChangeQty }: CartItemProps) => {
               <StyledLabelContainer>Количество</StyledLabelContainer>
               <StyledContainer>
                 <StyledSelectList
-                  value={String(numItems)}
+                  value={String(storedBook.quantity)}
                   onChange={onChangeHandle}
                 >
                   <option value="1">1</option>
@@ -207,7 +210,7 @@ const CartItem = ({ storedBook, onRemoveItem, onChangeQty }: CartItemProps) => {
             <StyledPositionInCart gap="4px">
               <StyledLabelContainer>Итоговая сумма</StyledLabelContainer>
               <StyledContainer>
-                {storedBook.book.price * numItems} р.
+                {storedBook.book.price * storedBook.quantity} р.
               </StyledContainer>
             </StyledPositionInCart>
           </StyledMediaWrapper>
@@ -215,7 +218,9 @@ const CartItem = ({ storedBook, onRemoveItem, onChangeQty }: CartItemProps) => {
       </StyledMainWrapperCart>
       <StyledRemoveSectionPhone justifyContent="center">
         <StyledWrapper gap="20px">
-          <StyledMenuButton onClick={() => onRemoveItem(storedBook.book)}>
+          <StyledMenuButton
+            onClick={() => onRemoveItem(storedBook.book.bookId)}
+          >
             Удалить
           </StyledMenuButton>
           <StyledMenuButton>Добавить в избранное</StyledMenuButton>
@@ -224,4 +229,4 @@ const CartItem = ({ storedBook, onRemoveItem, onChangeQty }: CartItemProps) => {
     </StyledContainer>
   );
 };
-export default CartItem;
+export default CartItemComp;

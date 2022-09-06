@@ -1,7 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from 'styled-components';
 import GlobalStyles from './Components/Shared/globalStyles';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { LightTheme, DarkTheme } from './Components/Shared/theme';
 //import { StyledButton } from './Components/Shared/styles';
 import { Header } from './Components/Header/Header';
@@ -11,7 +11,7 @@ import { StyledWrapper, StyledContainer } from './Components/Shared/styles';
 import styled from 'styled-components';
 import { DetailsPage } from './Components/DetailsPage/DetailsPage';
 import SearchPage from './Components/SearchPage/SearchPage';
-import { Book } from './Data/BookData';
+import { Book, CartItem } from './Data/BookData';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { CartPage } from './Components/CartPage/CartPage';
@@ -52,58 +52,64 @@ const notifyOnRemove = () =>
     draggable: false,
     progress: undefined,
   });
+const cartFromLocalStorage = JSON.parse(localStorage.getItem('cart') || '[]');
 function App() {
   const [theme, setTheme] = useState('light');
-  const [addedToCart, setAddedToCart] = useState<StoredBookInCart[]>([]);
+  const [cart, setCart] = useState<CartItem[]>(cartFromLocalStorage);
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }, [cart]);
   const themeToggler = () => {
     theme === 'light' ? setTheme('dark') : setTheme('light');
   };
   const onAddHandler = (book: Book) => {
     notifyOnAddToCart();
-    const exist = addedToCart.find(
+    const exist = cart.find(
       (storedBook) => storedBook.book.bookId === book.bookId,
     );
     if (exist) {
-      setAddedToCart(
-        addedToCart.map((x) =>
-          x.book.bookId === book.bookId ? { ...exist, qty: exist.qty + 1 } : x,
+      setCart(
+        cart.map((x) =>
+          x.book.bookId === book.bookId
+            ? { ...exist, quantity: exist.quantity + 1 }
+            : x,
         ),
       );
-    } else setAddedToCart([...addedToCart, { book, qty: 1 }]);
+    } else setCart([...cart, { book: book, quantity: 1 }]);
   };
   /* const onRemoveHandler = (book: Book) => {
     notifyOnRemove();
-    const exist = addedToCart.find(
-      (storedBook) => storedBook.book.id === book.id,
+    const exist = cart.find(
+      (storedBook) => storedBook.book.bookId === book.bookId,
     );
     if (exist) {
-      if (exist.qty > 1) {
-        setAddedToCart(
-          addedToCart.map((x) =>
-            x.book.id === book.id ? { ...exist, qty: exist.qty - 1 } : x,
+      if (exist.quantity > 1) {
+        setCart(
+          cart.map((x) =>
+            x.book.bookId === book.bookId
+              ? { ...exist, quantity: exist.quantity - 1 }
+              : x,
           ),
         );
-      } else setAddedToCart(addedToCart.filter((x) => x.book.id !== book.id));
+      } else setCart(cart.filter((x) => x.book.id !== book.id));
     }
   };*/
 
   // change qty books in cart
   const onChangeQtyBooks = (bookId: number, updQty: number) => {
-    const exist = addedToCart.find(
-      (storedBook) => storedBook.book.bookId === bookId,
-    );
+    const exist = cart.find((storedBook) => storedBook.book.bookId === bookId);
     if (exist) {
-      setAddedToCart(
-        addedToCart.map((x) =>
-          x.book.bookId === bookId ? { ...exist, qty: updQty } : x,
+      setCart(
+        cart.map((x) =>
+          x.book.bookId === bookId ? { ...exist, quantity: updQty } : x,
         ),
       );
     }
   };
 
-  const onAllRemoveHandler = (book: Book) => {
+  const onAllRemoveHandler = (bookId: number) => {
     notifyOnRemove();
-    setAddedToCart(addedToCart.filter((x) => x.book.bookId !== book.bookId));
+    setCart(cart.filter((x) => x.book.bookId !== bookId));
   };
   return (
     <ThemeProvider theme={theme === 'light' ? LightTheme : DarkTheme}>
@@ -114,11 +120,11 @@ function App() {
             <Header
               onChangeTheme={themeToggler}
               numAddedToCart={
-                addedToCart.length !== 0
-                  ? addedToCart
-                      .map((x) => x.qty)
-                      .reduce((sum, current) => sum + current)
-                  : 0
+                cart.length === 0
+                  ? 0
+                  : cart
+                      .map((item) => item.quantity)
+                      .reduce((sum, qty) => sum + qty)
               }
             />
             <Routes>
@@ -127,7 +133,7 @@ function App() {
                 path="books/:bookId"
                 element={
                   <DetailsPage
-                    storedBookInCart={addedToCart}
+                    storedBookInCart={cart}
                     addToCart={onAddHandler}
                   />
                 }
@@ -140,7 +146,7 @@ function App() {
                   <CartPage
                     onChangeQty={onChangeQtyBooks}
                     onRemove={onAllRemoveHandler}
-                    storedBooks={addedToCart}
+                    cartItems={cart}
                   />
                 }
               />
@@ -152,9 +158,9 @@ function App() {
                 element={
                   <OrderPage
                     orderSum={
-                      addedToCart.length !== 0
-                        ? addedToCart
-                            .map((s) => s.book.price * s.qty)
+                      cart.length !== 0
+                        ? cart
+                            .map((item) => item.book.price * item.quantity)
                             .reduce((sum, current) => sum + current)
                         : 0
                     }

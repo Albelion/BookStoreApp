@@ -470,3 +470,84 @@ export const deleteBookAsync = async (bookId: number): Promise<Book | null> => {
     return mapBookFromServer(result.body);
   } else return null;
 };
+export interface PostCartData {
+  bookId: number;
+  qty: number | null;
+}
+
+export interface CartItem {
+  book: Book;
+  quantity: number;
+}
+/*export interface CartInformation {
+  items: CartItem[];
+}*/
+// export interface CartDataFromServer {
+//   cartItems: Array<{
+//     cartItemId: number;
+//     book: BookDataFromServer;
+//     quantity: number;
+//   }>;
+//   totalValue: number;
+//   totalQty: number;
+// }
+/*export const mapCartDataFromServer = (
+  cartData: CartDataFromServer,
+): CartInformation => ({
+  items: [
+    ...cartData.cartItems.map((item) => ({
+      ...item,
+      book: mapBookFromServer(item.book),
+    })),
+  ],
+  totalValue: cartData.totalValue,
+  totalQty: cartData.totalQty,
+});*/
+
+// Get data from cart
+/*export const getItemFromSessionCart =
+  async (): Promise<CartInformation | null> => {
+    const result = await http<CartDataFromServer>(
+      {
+        path: '/cart',
+        method: 'get',
+      },
+      false,
+    );
+    if (result.ok && result.body) {
+      return mapCartDataFromServer(result.body);
+    } else return null;
+  };*/
+
+// Add to Session Cart
+// export const addItemToSessionCart = async (
+//   item: PostCartData,
+// ): Promise<CartInformation | null> => {
+//   const result = await http<CartDataFromServer, PostCartData>(
+//     {
+//       path: '/cart',
+//       method: 'post',
+//       body: item,
+//     },
+//     false,
+//   );
+//   if (result.ok && result.body) {
+//     return mapCartDataFromServer(result.body);
+//   } else return null;
+// };
+
+// // Remover item from the Cart
+// export const removeItemFromCart = async (
+//   bookId: number,
+// ): Promise<CartInformation | null> => {
+//   const result = await http<CartDataFromServer>(
+//     {
+//       path: `/cart/${bookId}`,
+//       method: 'delete',
+//     },
+//     false,
+//   );
+//   if (result.ok && result.body) {
+//     return mapCartDataFromServer(result.body);
+//   } else return null;
+// };
