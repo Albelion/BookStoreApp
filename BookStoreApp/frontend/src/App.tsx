@@ -19,6 +19,7 @@ import AdminPage from './Components/Admin/AdminPage';
 import EditPage from './Components/Admin/Edit/EditPage';
 import CreatePage from './Components/Admin/Create/CreatePage';
 import OrderPage from './Components/OrderPage/OrderPage';
+import SuccessOrderPage from './Components/SuccessOrder/SuccessOrderPage';
 
 const StyledMainWrapperContainer = styled(StyledWrapper)`
   max-width: 1140px;
@@ -106,6 +107,9 @@ function App() {
       );
     }
   };
+  const onClearCart = () => {
+    setCart(() => []);
+  };
 
   const onAllRemoveHandler = (bookId: number) => {
     notifyOnRemove();
@@ -164,9 +168,12 @@ function App() {
                             .reduce((sum, current) => sum + current)
                         : 0
                     }
+                    cartItems={cart}
+                    removeAllCartItems={onClearCart}
                   />
                 }
               />
+              <Route path="/sucessOrder" element={<SuccessOrderPage />} />
             </Routes>
           </StyledMainWrapperContainer>
         </StyledContainer>

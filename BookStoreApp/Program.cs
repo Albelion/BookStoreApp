@@ -23,6 +23,7 @@ namespace BookStoreApp
             builder.Services.AddCors(option=>option.AddPolicy("CorsPolicy", corsBuilder=>
                 corsBuilder.AllowAnyMethod().AllowAnyHeader().WithOrigins(builder.Configuration["Frontend"])));
             builder.Services.AddScoped<IStoreRepository, BookStoreRepository>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
             builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 

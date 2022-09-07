@@ -1,6 +1,7 @@
 import { Page } from '../Shared/Page';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import {
   StyledContainer,
   StyledWrapper,
@@ -14,11 +15,12 @@ import {
 } from '../Shared/styles';
 import { BsArrowLeftSquare } from 'react-icons/bs';
 import { Link } from 'react-router-dom';
+import { postOrderAsync, CartItem, PostOrderData } from '../../Data/BookData';
 
 type FormData = {
   userName: string;
   country: string;
-  phoneNumber: number;
+  phoneNumber: string;
   city: string;
   address: string;
   email: string;
@@ -143,9 +145,16 @@ const StyledBuyButton = styled(StyledButton)`
 
 interface OrderPageProps {
   orderSum: number;
+  cartItems: CartItem[];
+  removeAllCartItems: () => void;
 }
-const OrderPage = ({ orderSum }: OrderPageProps) => {
+const OrderPage = ({
+  orderSum,
+  cartItems,
+  removeAllCartItems,
+}: OrderPageProps) => {
   const deliverPrice = 200;
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -160,7 +169,25 @@ const OrderPage = ({ orderSum }: OrderPageProps) => {
     address,
     email,
     zip,
-  }: FormData) => {};
+  }: FormData) => {
+    const postOrderData: PostOrderData = {
+      cartItems: cartItems,
+      userName: userName,
+      country: country,
+      phoneNumber: phoneNumber,
+      city: city,
+      email: email,
+      zip: zip,
+    };
+    const postDataAsync = async () => {
+      const result = await postOrderAsync(postOrderData);
+      if (result) {
+        removeAllCartItems();
+        navigate('/sucessOrder');
+      }
+    };
+    postDataAsync();
+  };
   return (
     <Page title="Оформление заказа">
       <StyledMainContainer>
@@ -437,7 +464,9 @@ const OrderPage = ({ orderSum }: OrderPageProps) => {
                     {orderSum + deliverPrice} р.
                   </StyledContainer>
                 </StyledSumWrapper>
-                <StyledBuyButton>Оформить заказ</StyledBuyButton>
+                <StyledBuyButton disabled={isSubmitting}>
+                  Оформить заказ
+                </StyledBuyButton>
               </StyledCartWrapperWithMedia>
             </StyledWrapper>
           </StyledMainOrderInformation>
@@ -471,7 +500,9 @@ const OrderPage = ({ orderSum }: OrderPageProps) => {
                 </StyledPrimaryTextContainer>
                 <StyledContainer>{orderSum + deliverPrice} р.</StyledContainer>
               </StyledSumWrapper>
-              <StyledBuyButton>Оформить заказ</StyledBuyButton>
+              <StyledBuyButton disabled={isSubmitting}>
+                Оформить заказ
+              </StyledBuyButton>
             </StyledCartWrapper>
           </StyledCartInformation>
         </StyledForm>

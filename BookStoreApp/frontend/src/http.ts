@@ -1,5 +1,5 @@
 import { webApiUrl } from './AppSettings';
-import { BookListViewFromServer } from './Data/BookData';
+//import { BookListViewFromServer } from './Data/BookData';
 
 export interface HttpRequest<REQB> {
   path: string;
@@ -39,13 +39,6 @@ export const http = async <RESB, REQB = undefined>(
   const response = await fetch(request);
   if (response.ok) {
     const body = await response.json();
-    console.log('get body from server:');
-    console.log(typeof body);
-    let response1 = body as BookListViewFromServer;
-    console.log('bookList:');
-    console.log(typeof response1.bookList);
-    console.log('PageInfo:');
-    console.log(typeof response1.pageInfo);
     return { ok: response.ok, body };
   } else {
     logError(request, response);

@@ -479,6 +479,42 @@ export interface CartItem {
   book: Book;
   quantity: number;
 }
+
+export interface PostOrderData {
+  cartItems: CartItem[];
+  userName: string;
+  phoneNumber: string;
+  email: string;
+  country: string;
+  city: string;
+  zip: string;
+}
+export interface OrderDataFromServer {
+  cartItems: Array<{
+    book: Book;
+    quantity: number;
+  }>;
+  userName: string;
+  phoneNumber: string;
+  email: string;
+  country: string;
+  city: string;
+  zip: string;
+}
+export const postOrderAsync = async (postOrderData: PostOrderData) => {
+  const result = await http<OrderDataFromServer, PostOrderData>(
+    {
+      path: `/order`,
+      method: 'post',
+      body: postOrderData,
+    },
+    false,
+  );
+  if (result.ok && result.body) {
+    return result.body;
+  } else return null;
+};
+
 /*export interface CartInformation {
   items: CartItem[];
 }*/
