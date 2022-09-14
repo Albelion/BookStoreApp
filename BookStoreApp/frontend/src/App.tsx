@@ -20,6 +20,9 @@ import EditPage from './Components/Admin/Edit/EditPage';
 import CreatePage from './Components/Admin/Create/CreatePage';
 import OrderPage from './Components/OrderPage/OrderPage';
 import SuccessOrderPage from './Components/SuccessOrder/SuccessOrderPage';
+import LoginModal from './Components/Shared/LoginModal';
+import RegisterModal from './Components/Shared/RegisterModal';
+import { AuthProvider } from './Auth';
 
 const StyledMainWrapperContainer = styled(StyledWrapper)`
   max-width: 1140px;
@@ -57,6 +60,8 @@ const cartFromLocalStorage = JSON.parse(localStorage.getItem('cart') || '[]');
 function App() {
   const [theme, setTheme] = useState('light');
   const [cart, setCart] = useState<CartItem[]>(cartFromLocalStorage);
+  const [openLoginModal, setOpenLoginModal] = useState(false);
+  const [openRegisterModal, setOpenRegisterModal] = useState(false);
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
@@ -115,70 +120,96 @@ function App() {
     notifyOnRemove();
     setCart(cart.filter((x) => x.book.bookId !== bookId));
   };
+
+  const onOpenLoginModal = () => {
+    setOpenRegisterModal(() => false);
+    setOpenLoginModal((prev) => !prev);
+  };
+  const onOpenRegisterModal = () => {
+    setOpenLoginModal(() => false);
+    setOpenRegisterModal((prev) => !prev);
+  };
   return (
     <ThemeProvider theme={theme === 'light' ? LightTheme : DarkTheme}>
       <GlobalStyles />
-      <BrowserRouter>
-        <StyledContainer>
-          <StyledMainWrapperContainer>
-            <Header
-              onChangeTheme={themeToggler}
-              numAddedToCart={
-                cart.length === 0
-                  ? 0
-                  : cart
-                      .map((item) => item.quantity)
-                      .reduce((sum, qty) => sum + qty)
-              }
-            />
-            <Routes>
-              <Route path="" element={<HomePage />} />
-              <Route
-                path="books/:bookId"
-                element={
-                  <DetailsPage
-                    storedBookInCart={cart}
-                    addToCart={onAddHandler}
-                  />
+      <AuthProvider>
+        <BrowserRouter>
+          <StyledContainer>
+            <StyledMainWrapperContainer>
+              {openLoginModal && (
+                <LoginModal
+                  onCloseLoginModal={onOpenLoginModal}
+                  onOpenReginsterModal={onOpenRegisterModal}
+                />
+              )}
+              {openRegisterModal && (
+                <RegisterModal
+                  onCloseRegisterModal={onOpenRegisterModal}
+                  onOpenLoginModal={onOpenLoginModal}
+                />
+              )}
+              <Header
+                onOpenLoginModel={onOpenLoginModal}
+                onChangeTheme={themeToggler}
+                numAddedToCart={
+                  cart.length === 0
+                    ? 0
+                    : cart
+                        .map((item) => item.quantity)
+                        .reduce((sum, qty) => sum + qty)
                 }
               />
-              <Route path="search" element={<SearchPage />} />
-              <Route path="page/:currentPage" element={<HomePage />} />
-              <Route
-                path="cart"
-                element={
-                  <CartPage
-                    onChangeQty={onChangeQtyBooks}
-                    onRemove={onAllRemoveHandler}
-                    cartItems={cart}
-                  />
-                }
-              />
-              <Route path="admin" element={<AdminPage />} />
-              <Route path="edit/:bookId" element={<EditPage />} />
-              <Route path="create" element={<CreatePage />} />
-              <Route
-                path="order"
-                element={
-                  <OrderPage
-                    orderSum={
-                      cart.length !== 0
-                        ? cart
-                            .map((item) => item.book.price * item.quantity)
-                            .reduce((sum, current) => sum + current)
-                        : 0
-                    }
-                    cartItems={cart}
-                    removeAllCartItems={onClearCart}
-                  />
-                }
-              />
-              <Route path="/sucessOrder" element={<SuccessOrderPage />} />
-            </Routes>
-          </StyledMainWrapperContainer>
-        </StyledContainer>
-        <ToastContainer />
-      </BrowserRouter>
+              <Routes>
+                <Route path="" element={<HomePage />} />
+                <Route
+                  path="books/:bookId"
+                  element={
+                    <DetailsPage
+                      storedBookInCart={cart}
+                      addToCart={onAddHandler}
+                      onOpenLoginModal={onOpenLoginModal}
+                    />
+                  }
+                />
+                <Route path="search" element={<SearchPage />} />
+                <Route path="page/:currentPage" element={<HomePage />} />
+                <Route
+                  path="cart"
+                  element={
+                    <CartPage
+                      onChangeQty={onChangeQtyBooks}
+                      onRemove={onAllRemoveHandler}
+                      onOpenLoginModal={onOpenLoginModal}
+                      cartItems={cart}
+                    />
+                  }
+                />
+                <Route path="admin" element={<AdminPage />} />
+                <Route path="edit/:bookId" element={<EditPage />} />
+                <Route path="create" element={<CreatePage />} />
+                <Route
+                  path="order"
+                  element={
+                    <OrderPage
+                      orderSum={
+                        cart.length !== 0
+                          ? cart
+                              .map((item) => item.book.price * item.quantity)
+                              .reduce((sum, current) => sum + current)
+                          : 0
+                      }
+                      cartItems={cart}
+                      removeAllCartItems={onClearCart}
+                    />
+                  }
+                />
+                <Route path="/sucessOrder" element={<SuccessOrderPage />} />
+              </Routes>
+            </StyledMainWrapperContainer>
+          </StyledContainer>
+          <ToastContainer />
+        </BrowserRouter>
+      </AuthProvider>
     </ThemeProvider>
   );
 }

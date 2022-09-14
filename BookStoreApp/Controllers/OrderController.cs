@@ -3,6 +3,7 @@ using BookStoreApp.Data;
 using BookStoreApp.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BookStoreApp.Controllers{
     [Route("api/[controller]")]
@@ -13,7 +14,7 @@ namespace BookStoreApp.Controllers{
         {
             _dataRepository = repository;
         }
-        [HttpPost]
+        [HttpPost, Authorize]
         public ActionResult<Order> PostOrder(Order order){
             Order? newOrder = _dataRepository.SaveOrder(order);
             return newOrder ==null?NotFound():newOrder;

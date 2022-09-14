@@ -55,7 +55,7 @@ const StyledBookDescriptionPanel = styled(StyledContainer)`
 const BookTitleStyled = styled.h1`
   text-align: start;
 `;
-const BookAutorStyled = styled.div`
+const BookAuthorStyled = styled.div`
   text-align: start;
   font-style: italic;
   font-size: 1.1rem;
@@ -123,11 +123,13 @@ const StyledMediaWrapperPhoneAndTabletTitle = styled(
 interface DetailsPageProps {
   addToCart: (book: Book) => void;
   storedBookInCart: CartItem[];
+  onOpenLoginModal: () => void;
 }
 
 export const DetailsPage = ({
   addToCart,
   storedBookInCart,
+  onOpenLoginModal,
 }: DetailsPageProps) => {
   //get booksId from parameters
   const { bookId } = useParams();
@@ -142,6 +144,12 @@ export const DetailsPage = ({
       const foundedBook = await getBookAsync(bookId);
       if (!cancelled && foundedBook) {
         setFoundBook(foundedBook);
+        console.log('foundedBook:');
+        console.log(foundedBook.ratings);
+        console.log('users:');
+        console.log(foundedBook.ratings.map((r) => r.users));
+        console.log('type of users:');
+        console.log(foundedBook.ratings.map((r) => typeof r.users));
       }
     };
     if (bookId) {
@@ -164,9 +172,9 @@ export const DetailsPage = ({
           <StyledMediaWrapperPhoneAndTabletTitle>
             <StyledContainer>
               <BookTitleStyled>{foundedBook.name}</BookTitleStyled>
-              <BookAutorStyled>
-                {foundedBook.autors.map((autor) => autor.name + ' ')}
-              </BookAutorStyled>
+              <BookAuthorStyled>
+                {foundedBook.authors.map((author) => author.name).join(', ')}
+              </BookAuthorStyled>
             </StyledContainer>
           </StyledMediaWrapperPhoneAndTabletTitle>
           <StyledMainSectionWithPhoneMedia
@@ -191,9 +199,9 @@ export const DetailsPage = ({
             >
               <StyledContainer>
                 <BookTitleStyled>{foundedBook.name}</BookTitleStyled>
-                <BookAutorStyled>
-                  {foundedBook.autors.map((autor) => autor.name) + ' '}
-                </BookAutorStyled>
+                <BookAuthorStyled>
+                  {foundedBook.authors.map((author) => author.name).join(', ')}
+                </BookAuthorStyled>
               </StyledContainer>
               <StyledWrapper justifyContent="start" gap="15px">
                 <StyledWrapper>
@@ -205,7 +213,8 @@ export const DetailsPage = ({
                 <StyledWrapper>
                   <StyledContainer>Моя оценка: </StyledContainer>
                   <StarRatingWithState
-                    bookId={foundedBook.bookId}
+                    openLoginModal={onOpenLoginModal}
+                    book={foundedBook}
                     notify={notifyToSetStar}
                   />
                 </StyledWrapper>
@@ -272,17 +281,15 @@ export const DetailsPage = ({
             <StyledWrapper justifyContent="start" gap="10px">
               <StyledWrapper>
                 <StyledContainer>
-                  {foundedBook.ratings
-                    .map((x) => x.value)
-                    .reduce((sum, current) => sum + current) /
-                    foundedBook.ratings.length}
+                  {getAverageRating(foundedBook.ratings)}
                 </StyledContainer>
                 <TiStarFullOutline color="#ffc107" size="20px" />
               </StyledWrapper>
               <StyledWrapper>
                 <StyledContainer>Моя оценка: </StyledContainer>
                 <StarRatingWithState
-                  bookId={foundedBook.bookId}
+                  openLoginModal={onOpenLoginModal}
+                  book={foundedBook}
                   notify={notifyToSetStar}
                 />
               </StyledWrapper>

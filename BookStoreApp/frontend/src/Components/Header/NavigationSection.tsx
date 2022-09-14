@@ -3,6 +3,7 @@ import { StyledContainer, StyledWrapper, StyledButton } from '../Shared/styles';
 import { useTheme } from 'styled-components';
 import { Link } from 'react-router-dom';
 import { grey1, purple5 } from '../Shared/styles';
+import { useAuth } from '../../Auth';
 import { MdOutlineLightMode, MdOutlineNightlight } from 'react-icons/md';
 
 const StyledLinkNavigation = styled(Link)`
@@ -45,14 +46,16 @@ export const NavigationSection = ({
   onChangeTheme,
 }: NavigationSectionProps) => {
   const currentTheme = useTheme();
+  const { isAuthenticated, user } = useAuth();
   return (
     <StyledMediaContainer>
       <StyledWrapper>
         <StyledNavigation>
           <StyledWrapper justifyContent="start">
             <StyledLinkNavigation to="/">Домой</StyledLinkNavigation>
-            <StyledLinkNavigation to="admin">Продукты</StyledLinkNavigation>
-            <StyledLinkNavigation to="/">Обо мне</StyledLinkNavigation>
+            {isAuthenticated && user?.role === 'admin' && (
+              <StyledLinkNavigation to="admin">Продукты</StyledLinkNavigation>
+            )}
           </StyledWrapper>
         </StyledNavigation>
         <StyledWrapper>

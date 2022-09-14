@@ -13,6 +13,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { BiSearchAlt2, BiLogIn, BiCart } from 'react-icons/bi';
 import { GiBookCover } from 'react-icons/gi';
 import { GoThreeBars, GoX } from 'react-icons/go';
+import { useAuth } from '../../Auth';
 import { useState } from 'react';
 
 const StyledSearchButton = styled(StyledButton)`
@@ -87,23 +88,45 @@ const StyledLinksBar = styled(Link)`
       props.theme.nameOfTheme === 'light' ? grey1 : purple5};
   }
 `;
-
+const StyledLogginButton = styled(StyledButton)`
+  padding: 10px 15px;
+  text-decoration: none;
+  color: ${(props) => props.theme.fontColorPrimary};
+  &:hover {
+    cursor: pointer;
+    background-color: ${(props) =>
+      props.theme.nameOfTheme === 'light' ? grey1 : purple5};
+  }
+`;
+const StyledLogginButtonWithMedia = styled(StyledLogginButton)`
+  @media ${(props) => props.theme.media.phone} {
+    display: none;
+  } ;
+`;
 type FormData = {
   search: string;
 };
 
 interface SearchSectionProps {
   numAddedToCart: number;
+  onOpenLoginModal: () => void;
 }
 
-export const SearchSection = ({ numAddedToCart }: SearchSectionProps) => {
+export const SearchSection = ({
+  numAddedToCart,
+  onOpenLoginModal,
+}: SearchSectionProps) => {
   const navigate = useNavigate();
   const { register, handleSubmit } = useForm<FormData>();
   const [searchParams] = useSearchParams();
   const [toggler, setToggler] = useState(false);
+  const { isAuthenticated, user, signOut } = useAuth();
   const criteria = searchParams.get('criteria') || '';
   const submitForm = ({ search }: FormData) => {
     navigate(`search?criteria=${search}&page=1`);
+  };
+  const onLogout = () => {
+    signOut();
   };
   return (
     <StyledContainer width="100%" padding="10px">
@@ -135,12 +158,26 @@ export const SearchSection = ({ numAddedToCart }: SearchSectionProps) => {
         <StyledButtonBars onClick={() => setToggler((toggler) => !toggler)}>
           {toggler ? <GoX size="20px" /> : <GoThreeBars size="20px" />}
         </StyledButtonBars>
-        <StyledLinkWithMedia to="/">
-          <StyledContainer>
-            <BiLogIn size="30px" />
-          </StyledContainer>
-          <StyledContainer>Войти</StyledContainer>
-        </StyledLinkWithMedia>
+        {isAuthenticated ? (
+          <StyledLogginButtonWithMedia onClick={() => onLogout()}>
+            <StyledWrapper gap="5px">
+              <StyledContainer>
+                <BiLogIn size="30px" />
+              </StyledContainer>
+              <StyledContainer>Выйти</StyledContainer>
+            </StyledWrapper>
+          </StyledLogginButtonWithMedia>
+        ) : (
+          <StyledLogginButtonWithMedia onClick={() => onOpenLoginModal()}>
+            <StyledWrapper gap="5px">
+              <StyledContainer>
+                <BiLogIn size="30px" />
+              </StyledContainer>
+              <StyledContainer>Войти</StyledContainer>
+            </StyledWrapper>
+          </StyledLogginButtonWithMedia>
+        )}
+
         <StyledLinkWithMedia to="cart">
           <StyledContainer>
             <BiCart size="30px" />
@@ -152,9 +189,18 @@ export const SearchSection = ({ numAddedToCart }: SearchSectionProps) => {
       {toggler && (
         <StyledMediaPhoneMenuLinks flexDirection="column">
           <StyledLinksBar to="/">Домой</StyledLinksBar>
-          <StyledLinksBar to="/">Продукты</StyledLinksBar>
-          <StyledLinksBar to="/">Обо мне</StyledLinksBar>
-          <StyledLinksBar to="/">Войти</StyledLinksBar>
+          {isAuthenticated && user?.role === 'admin' && (
+            <StyledLinksBar to="/">Продукты</StyledLinksBar>
+          )}
+          {isAuthenticated ? (
+            <StyledLogginButton onClick={() => onLogout()}>
+              Выйти
+            </StyledLogginButton>
+          ) : (
+            <StyledLogginButton onClick={() => onOpenLoginModal()}>
+              Войти
+            </StyledLogginButton>
+          )}
           <StyledLinksBar to="cart">Корзина</StyledLinksBar>
         </StyledMediaPhoneMenuLinks>
       )}

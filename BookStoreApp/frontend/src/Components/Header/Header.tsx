@@ -18,10 +18,15 @@ const StyledStickyContainer = styled(StyledContainer)`
 `;
 interface HeaderProps {
   onChangeTheme: () => void;
+  onOpenLoginModel: () => void;
   numAddedToCart: number;
 }
 
-export const Header = ({ onChangeTheme, numAddedToCart }: HeaderProps) => {
+export const Header = ({
+  onChangeTheme,
+  onOpenLoginModel,
+  numAddedToCart,
+}: HeaderProps) => {
   return (
     <StyledStickyContainer
       display="block"
@@ -30,7 +35,10 @@ export const Header = ({ onChangeTheme, numAddedToCart }: HeaderProps) => {
       margin="10px 0px"
     >
       <HeaderMainWrapper>
-        <SearchSection numAddedToCart={numAddedToCart} />
+        <SearchSection
+          onOpenLoginModal={onOpenLoginModel}
+          numAddedToCart={numAddedToCart}
+        />
         <NavigationSection onChangeTheme={onChangeTheme} />
       </HeaderMainWrapper>
     </StyledStickyContainer>

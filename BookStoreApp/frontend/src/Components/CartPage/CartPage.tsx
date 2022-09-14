@@ -3,13 +3,16 @@ import { Page } from '../Shared/Page';
 import CartItemComp from './CartItemComp';
 //import { useState, useEffect } from 'react';
 import { CartItem } from '../../Data/BookData';
-import { StyledWrapper, StyledContainer } from '../Shared/styles';
+import { StyledWrapper, StyledContainer, StyledButton } from '../Shared/styles';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../Auth';
 import { Link } from 'react-router-dom';
 interface CartPageProps {
   cartItems: CartItem[];
   onRemove: (bookId: number) => void;
   onChangeQty: (bookId: number, quantity: number) => void;
+  onOpenLoginModal: () => void;
 }
 const StyledTotalPriceWrapper = styled(StyledWrapper)`
   margin-right: 10px;
@@ -19,15 +22,14 @@ const StyledEmptyCartLabel = styled(StyledContainer)`
   padding: 2em;
   color: ${(props) => props.theme.fontColorSecondary};
 `;
-const StyledLink = styled(Link)`
-  text-decoration: none;
-  padding: 5px 8px;
-`;
 export const CartPage = ({
   cartItems,
   onRemove,
   onChangeQty,
+  onOpenLoginModal,
 }: CartPageProps) => {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   //const countHandler = () => {};
   /*useEffect(() => {
     if (storedBooks.length !== 0) {
@@ -38,6 +40,9 @@ export const CartPage = ({
       );
     }
   }, [onRemove, onChangeQty, storedBooks]); */
+  const checkUserLogin = () => {
+    isAuthenticated ? navigate('/order') : onOpenLoginModal();
+  };
   return (
     <Page title="Корзина">
       {cartItems.length !== 0 ? (
@@ -66,7 +71,9 @@ export const CartPage = ({
                 : 0}
               р.
             </StyledContainer>
-            <StyledLink to="/order">Перейти к оформлению заказа</StyledLink>
+            <StyledButton onClick={() => checkUserLogin()}>
+              Перейти к оформлению заказа
+            </StyledButton>
           </StyledTotalPriceWrapper>
         </>
       ) : (

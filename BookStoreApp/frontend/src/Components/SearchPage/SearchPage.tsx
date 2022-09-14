@@ -36,8 +36,8 @@ const SearchPage = () => {
         booksLoading
           ? 'Загрузка...'
           : bookListView
-          ? `Для запроса "${search}" не найдено книг`
-          : `Результаты поиска для "${search}"`
+          ? `Результаты поиска для "${search}"`
+          : `Для запроса "${search}" не найдено книг`
       }
     >
       {!booksLoading && (

@@ -25,16 +25,18 @@ export const StyledButton = styled.button<ButtonProps>`
   padding: 15px 20px;
   font-size: 1rem;
   box-sizing: border-box;
-  cursor: pointer;
   &:focus {
     outline: none;
   }
   &:hover {
+    cursor: pointer;
     background-color: ${(props) =>
-      props.theme.bodyColor === '#fff' ? grey1 : purple5};
+      props.theme.nameOfTheme === 'light' ? grey3 : grey1};
   }
   align-self: ${(props) => props.align || 'stretch'};
-  background-color: ${(props) => props.backgroundColor || 'white'};
+  background-color: ${(props) =>
+    props.backgroundColor || props.theme.bodyColor};
+  color: ${(props) => props.theme.fontColorPrimary};
 `;
 
 // Styled Container
@@ -45,6 +47,7 @@ interface ContainerProps {
   height?: string;
   margin?: string;
   padding?: string;
+  alignSelf?: string;
 }
 export const StyledContainer = styled.div<ContainerProps>`
   display: ${(props) => props.display || 'block'};
@@ -53,6 +56,7 @@ export const StyledContainer = styled.div<ContainerProps>`
   height: ${(props) => props.height || 'auto'};
   margin: ${(props) => props.margin || '0px'};
   padding: ${(props) => props.padding || '0px'};
+  align-self: ${(props) => props.alignSelf || 'auto'};
 `;
 export const StyledFixedWidthSectionContainer = styled(StyledContainer)`
   max-width: 1140px;

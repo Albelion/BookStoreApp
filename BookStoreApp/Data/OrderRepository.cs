@@ -9,7 +9,7 @@ namespace BookStoreApp.Data{
             _context = ctx;
         }
 
-        public IQueryable<Order> Orders => _context.Orders.Include(l=>l.CartItems).ThenInclude(b=>b.Book).ThenInclude(a=>a.Autors).Include(l=>l.CartItems).ThenInclude(b=>b.Book).ThenInclude(r=>r.Ratings);
+        public IQueryable<Order> Orders => _context.Orders.Include(l=>l.CartItems).ThenInclude(b=>b.Book).ThenInclude(a=>a.Authors).Include(l=>l.CartItems).ThenInclude(b=>b.Book).ThenInclude(r=>r.Ratings);
 
         public Order? SaveOrder(Order order)
         {

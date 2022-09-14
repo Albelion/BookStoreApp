@@ -49,7 +49,7 @@ type FormData1 = {
   rating?: number;
   price: number;
   description: string;
-  autors: string;
+  authors: string;
 };
 const CreatePage = () => {
   const [successfullySubmitted, setSuccessfullySubmitted] = useState(false);
@@ -88,8 +88,10 @@ const CreatePage = () => {
     //   };
     //}
 
-    // read autors
-    const postAutorFromForm = data.autors.split(',').map((a) => a.trim());
+    // read authors
+    const postAuthorFromForm = data.authors
+      .split(',')
+      .map((a) => a.trim().toUpperCase());
     const imageFileForm =
       data.picture && data.picture[0] ? data.picture[0] : null;
     var formData: any = new FormData();
@@ -101,9 +103,8 @@ const CreatePage = () => {
     formData.append('price', data.price);
     formData.append('description', data.description);
     formData.append('rating', data?.rating);
-    postAutorFromForm.forEach((a) => formData.append('autors', a));
+    postAuthorFromForm.forEach((a) => formData.append('authors', a));
     const result = await postBookAsync(formData);
-
     setSuccessfullySubmitted(result ? true : false);
   };
 
@@ -148,22 +149,22 @@ const CreatePage = () => {
                   Название книги не должно превышать 50 символов
                 </StyledErrorContainer>
               )}
-              <StyledFormLabel htmlFor="autors">Авторы: </StyledFormLabel>
+              <StyledFormLabel htmlFor="authors">Авторы: </StyledFormLabel>
               <StyledInput
-                {...register('autors', {
+                {...register('authors', {
                   required: true,
                   maxLength: 50,
                 })}
-                name="autors"
+                name="authors"
                 type="text"
-                id="autors"
+                id="authors"
               />
-              {errors.autors && errors.autors.type === 'required' && (
+              {errors.authors && errors.authors.type === 'required' && (
                 <StyledErrorContainer>
                   Укажите авторов книги через запятую
                 </StyledErrorContainer>
               )}
-              {errors.autors && errors.autors.type === 'maxLength' && (
+              {errors.authors && errors.authors.type === 'maxLength' && (
                 <StyledErrorContainer>
                   Поле не должно превышать 50 символов
                 </StyledErrorContainer>
@@ -198,7 +199,8 @@ const CreatePage = () => {
               <StyledInput
                 {...register('pageNumber', {
                   required: true,
-                  maxLength: 10,
+                  min: 1,
+                  max: 1000000,
                 })}
                 name="pageNumber"
                 type="number"
@@ -209,9 +211,14 @@ const CreatePage = () => {
                   Введите количество страниц книги
                 </StyledErrorContainer>
               )}
-              {errors.pageNumber && errors.pageNumber.type === 'maxLength' && (
+              {errors.pageNumber && errors.pageNumber.type === 'min' && (
                 <StyledErrorContainer>
-                  Длина поля не должна превышать 10 символов
+                  Количество страниц не должно быть меньше 1
+                </StyledErrorContainer>
+              )}
+              {errors.pageNumber && errors.pageNumber.type === 'max' && (
+                <StyledErrorContainer>
+                  Количество страниц не может быть больше 1000000
                 </StyledErrorContainer>
               )}
               <StyledFormLabel htmlFor="publishYear">
@@ -220,8 +227,8 @@ const CreatePage = () => {
               <StyledInput
                 {...register('publishYear', {
                   required: true,
-                  minLength: 1,
-                  maxLength: 4,
+                  min: 1,
+                  max: 2025,
                 })}
                 name="publishYear"
                 type="number"
@@ -232,18 +239,16 @@ const CreatePage = () => {
                   Введите год пубикации книги
                 </StyledErrorContainer>
               )}
-              {errors.publishYear &&
-                errors.publishYear.type === 'minLength' && (
-                  <StyledErrorContainer>
-                    Год должен содержать как минимум 1 символ
-                  </StyledErrorContainer>
-                )}
-              {errors.publishYear &&
-                errors.publishYear.type === 'maxLength' && (
-                  <StyledErrorContainer>
-                    Год публикации не должен превышать 4 символов
-                  </StyledErrorContainer>
-                )}
+              {errors.publishYear && errors.publishYear.type === 'min' && (
+                <StyledErrorContainer>
+                  Минимальное значение: 1
+                </StyledErrorContainer>
+              )}
+              {errors.publishYear && errors.publishYear.type === 'max' && (
+                <StyledErrorContainer>
+                  Максимальное значение: 2025
+                </StyledErrorContainer>
+              )}
               <StyledFormLabel htmlFor="rating">Рейтинг: </StyledFormLabel>
               <StyledInput
                 {...register('rating', {
@@ -257,16 +262,6 @@ const CreatePage = () => {
                 type="number"
                 id="rating"
               />
-              {errors.rating && errors.rating.type === 'minLength' && (
-                <StyledErrorContainer>
-                  Рейтин должен содержать как минимум 1 символ
-                </StyledErrorContainer>
-              )}
-              {errors.rating && errors.rating.type === 'maxLength' && (
-                <StyledErrorContainer>
-                  Длина рейтинга не должна превышть 5 символов
-                </StyledErrorContainer>
-              )}
               {errors.rating && errors.rating.type === 'min' && (
                 <StyledErrorContainer>
                   Рейтинг не может быть меньше 1
@@ -281,9 +276,8 @@ const CreatePage = () => {
               <StyledInput
                 {...register('price', {
                   required: true,
-                  minLength: 1,
-                  maxLength: 10,
                   min: 0,
+                  max: 1000000,
                 })}
                 name="price"
                 type="number"
@@ -292,19 +286,14 @@ const CreatePage = () => {
               {errors.price && errors.price.type === 'required' && (
                 <StyledErrorContainer>Введите цену книги</StyledErrorContainer>
               )}
-              {errors.price && errors.price.type === 'minLength' && (
+              {errors.price && errors.price.type === 'min' && (
                 <StyledErrorContainer>
-                  Цена должна содержать как минимум 1 символ
-                </StyledErrorContainer>
-              )}
-              {errors.price && errors.price.type === 'maxLength' && (
-                <StyledErrorContainer>
-                  Цена не должна превышать 10 символов
+                  Цена не должна быть отрицательной
                 </StyledErrorContainer>
               )}
               {errors.price && errors.price.type === 'min' && (
                 <StyledErrorContainer>
-                  Цена не должна быть отрицательной
+                  Цена не должна быть больше 1000000
                 </StyledErrorContainer>
               )}
               <StyledFormLabel htmlFor="description">
@@ -314,11 +303,11 @@ const CreatePage = () => {
                 {...register('description', {
                   required: true,
                   minLength: 10,
-                  maxLength: 400,
+                  maxLength: 500,
                 })}
                 name="description"
                 id="description"
-                cols={40}
+                cols={50}
                 rows={10}
               />
               {errors.description && errors.description.type === 'required' && (
@@ -335,7 +324,7 @@ const CreatePage = () => {
               {errors.description &&
                 errors.description.type === 'maxLength' && (
                   <StyledErrorContainer>
-                    Описание не должно превышать 400 символов
+                    Описание не должно превышать 500 символов
                   </StyledErrorContainer>
                 )}
               <StyledFormLabel htmlFor="picture">Изображение: </StyledFormLabel>

@@ -6,6 +6,7 @@ import { StyledWrapper, StyledContainer } from '../Shared/styles';
 import StarRatingView from './StarRatingView';
 import { grey5 } from '../Shared/styles';
 import { Link } from 'react-router-dom';
+import { printAuthorsName } from '../../Data/BookData';
 import { getAverageRating } from '../../Data/BookData';
 
 const BookCardStyled = styled(StyledWrapper)`
@@ -65,7 +66,7 @@ const StyledCardFoterInformation = styled(StyledWrapper)`
   align-items: start;
   border-top: 2px solid ${grey5};
 `;
-const StyledAutorInformationContainer = styled(StyledContainer)`
+const StyledAuthorInformationContainer = styled(StyledContainer)`
   color: ${(props) => props.theme.fontColorSecondary};
   font-size: 0.9em;
 `;
@@ -105,9 +106,9 @@ export const BookCardItem = ({ book }: Props) => {
             <StyledContainer>
               <CardTitle>{book.name}</CardTitle>
             </StyledContainer>
-            <StyledAutorInformationContainer>
-              {book.autors.map((autor) => autor.name).join(' ')}
-            </StyledAutorInformationContainer>
+            <StyledAuthorInformationContainer>
+              {printAuthorsName(book.authors)}
+            </StyledAuthorInformationContainer>
           </StyledCardFoterInformation>
         </StyledContainer>
       </StyledLinkCard>

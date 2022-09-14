@@ -61,7 +61,7 @@ const StyledLabelContainer = styled(StyledContainer)`
   font-weight: bold;
   border-bottom: 1px solid ${grey3};
 `;
-const StyledAutorContainer = styled(StyledContainer)`
+const StyledAuthorContainer = styled(StyledContainer)`
   font-size: 0.8rem;
 `;
 const StyledNameBookContainer = styled(StyledContainer)`
@@ -142,9 +142,9 @@ const CartItemComp = ({
             <StyledNameBookContainer>
               {storedBook.book.name}
             </StyledNameBookContainer>
-            <StyledAutorContainer>
-              {storedBook.book.autors.map((a) => a.name)}
-            </StyledAutorContainer>
+            <StyledAuthorContainer>
+              {storedBook.book.authors.map((a) => a.name)}
+            </StyledAuthorContainer>
             <StyledMediaWrapperPhoneAndTablet
               flexDirection="column"
               alignItems="start"

@@ -12,16 +12,16 @@ public class BookStoreRepository:IStoreRepository
         context = ctx;
     }
 
-    public IQueryable<Book> Books => context.Books.Include(r=>r.Ratings).Include(a=>a.Autors);
+    public IQueryable<Book> Books => context.Books.Include(r=>r.Ratings).ThenInclude(a=>a.Users).Include(a=>a.Authors);
 
-    public IQueryable<Rating> Ratings => context.Ratings.Include(b=>b.Book);
+    public IQueryable<Rating> Ratings => context.Ratings.Include(b=>b.Book).Include(u=>u.Users);
     
 
-    public IQueryable<Autor> Autors => context.Autors.Include(a=>a.Books);
+    public IQueryable<Author> Authors => context.Authors.Include(a=>a.Books);
 
-        public void AddAutor(Autor a)
+        public void AddAuthor(Author a)
         {
-            context.Autors.Add(a);
+            context.Authors.Add(a);
        }
 
         public void AddRating(Rating r)
@@ -30,9 +30,9 @@ public class BookStoreRepository:IStoreRepository
             //await context.SaveChangesAsync();
         }
 
-        public async Task DeleteAutorAsync(Autor a)
+        public async Task DeleteAuthorAsync(Author a)
         {
-            context.Autors.Remove(a);
+            context.Authors.Remove(a);
             await context.SaveChangesAsync();
         }
 
@@ -47,7 +47,7 @@ public class BookStoreRepository:IStoreRepository
             context.Ratings.Remove(r);
             await context.SaveChangesAsync();
         }
-        public async Task SaveAutorAsync(Autor a)
+        public async Task SaveAuthorAsync(Author a)
         {
             await context.SaveChangesAsync();
         }

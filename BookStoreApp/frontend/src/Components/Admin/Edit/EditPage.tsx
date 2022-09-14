@@ -50,7 +50,7 @@ type FormData = {
   picture: FileList;
   price: number;
   description: string;
-  autors: string;
+  authors: string;
 };
 
 const EditPage = () => {
@@ -71,8 +71,10 @@ const EditPage = () => {
   const submitForm = async (data: FormData) => {
     const imageFileForm =
       data.picture && data.picture[0] ? data.picture[0] : null;
-    // read autors
-    const postAutors = data.autors.split(',').map((a) => a.trim());
+    // read authors
+    const postAuthors = data.authors
+      .split(',')
+      .map((a) => a.trim().toUpperCase());
     // put data to server
     var formData: any = new FormData();
     formData.append('name', data.bookName);
@@ -82,7 +84,7 @@ const EditPage = () => {
     formData.append('imageFile', imageFileForm);
     formData.append('price', data.price);
     formData.append('description', data.description);
-    postAutors.forEach((a) => formData.append('autors', a));
+    postAuthors.forEach((a) => formData.append('authors', a));
     const result = await editBookAsync(Number(bookId), formData);
     setSuccessfullySubmitted(result ? true : false);
   };
@@ -96,7 +98,10 @@ const EditPage = () => {
         setBooksLoading(false);
         //set formValues:
         if (foundedBook) {
-          setValue('autors', foundedBook.autors.map((a) => a.name)?.join(', '));
+          setValue(
+            'authors',
+            foundedBook.authors.map((a) => a.name)?.join(', '),
+          );
           setValue('bookName', foundedBook.name);
           setValue('pageNumber', foundedBook.pageNumber);
           setValue('price', foundedBook.price);
@@ -155,26 +160,26 @@ const EditPage = () => {
                   Название книги не должно превышать 50 символов
                 </StyledErrorContainer>
               )}
-              <StyledFormLabel htmlFor="autors">Авторы</StyledFormLabel>
+              <StyledFormLabel htmlFor="authors">Авторы</StyledFormLabel>
               <StyledInput
-                {...register('autors', {
+                {...register('authors', {
                   //required: true,
                   maxLength: 50,
-                  //value: foundedBook?.autors.map((a) => a.name)?.join(', '),
+                  //value: foundedBook?.authors.map((a) => a.name)?.join(', '),
                 })}
-                name="autors"
+                name="authors"
                 type="text"
-                id="autors"
-                defaultValue={foundedBook?.autors
+                id="authors"
+                defaultValue={foundedBook?.authors
                   .map((a) => a.name)
                   ?.join(', ')}
               />
-              {errors.autors && errors.autors.type === 'required' && (
+              {errors.authors && errors.authors.type === 'required' && (
                 <StyledErrorContainer>
                   Укажите авторов книги через запятую
                 </StyledErrorContainer>
               )}
-              {errors.autors && errors.autors.type === 'maxLength' && (
+              {errors.authors && errors.authors.type === 'maxLength' && (
                 <StyledErrorContainer>
                   Поле не должно превышать 50 символов
                 </StyledErrorContainer>
@@ -209,7 +214,8 @@ const EditPage = () => {
               </StyledFormLabel>
               <StyledInput
                 {...register('pageNumber', {
-                  maxLength: 10,
+                  max: 1000000,
+                  min: 1,
                   required: true,
                 })}
                 name="pageNumber"
@@ -222,9 +228,14 @@ const EditPage = () => {
                   Введите количество страниц книги
                 </StyledErrorContainer>
               )}
-              {errors.pageNumber && errors.pageNumber.type === 'maxLength' && (
+              {errors.pageNumber && errors.pageNumber.type === 'min' && (
                 <StyledErrorContainer>
-                  Длина поля не должна превышать 10 символов
+                  Количество страниц не должно быть меньше 1
+                </StyledErrorContainer>
+              )}
+              {errors.pageNumber && errors.pageNumber.type === 'max' && (
+                <StyledErrorContainer>
+                  Количество страниц не может быть больше 1000000
                 </StyledErrorContainer>
               )}
               <StyledFormLabel htmlFor="publishYear">
@@ -233,8 +244,8 @@ const EditPage = () => {
               <StyledInput
                 {...register('publishYear', {
                   required: true,
-                  minLength: 1,
-                  maxLength: 4,
+                  min: 1,
+                  max: 2025,
                 })}
                 name="publishYear"
                 type="number"
@@ -246,25 +257,22 @@ const EditPage = () => {
                   Введите год пубикации книги
                 </StyledErrorContainer>
               )}
-              {errors.publishYear &&
-                errors.publishYear.type === 'minLength' && (
-                  <StyledErrorContainer>
-                    Год должен содержать как минимум 1 символ
-                  </StyledErrorContainer>
-                )}
-              {errors.publishYear &&
-                errors.publishYear.type === 'maxLength' && (
-                  <StyledErrorContainer>
-                    Год публикации не должен превышать 4 символов
-                  </StyledErrorContainer>
-                )}
+              {errors.publishYear && errors.publishYear.type === 'min' && (
+                <StyledErrorContainer>
+                  Минимальное значение: 1
+                </StyledErrorContainer>
+              )}
+              {errors.publishYear && errors.publishYear.type === 'max' && (
+                <StyledErrorContainer>
+                  Максимальное значение: 2025
+                </StyledErrorContainer>
+              )}
               <StyledFormLabel htmlFor="price">Цена: </StyledFormLabel>
               <StyledInput
                 {...register('price', {
                   required: true,
-                  minLength: 1,
-                  maxLength: 10,
                   min: 0,
+                  max: 1000000,
                 })}
                 name="price"
                 type="number"
@@ -274,19 +282,14 @@ const EditPage = () => {
               {errors.price && errors.price.type === 'required' && (
                 <StyledErrorContainer>Введите цену книги</StyledErrorContainer>
               )}
-              {errors.price && errors.price.type === 'minLength' && (
+              {errors.price && errors.price.type === 'min' && (
                 <StyledErrorContainer>
-                  Цена должна содержать как минимум 1 символ
-                </StyledErrorContainer>
-              )}
-              {errors.price && errors.price.type === 'maxLength' && (
-                <StyledErrorContainer>
-                  Цена не должна превышать 10 символов
+                  Цена не должна быть отрицательной
                 </StyledErrorContainer>
               )}
               {errors.price && errors.price.type === 'min' && (
                 <StyledErrorContainer>
-                  Цена не должна быть отрицательной
+                  Цена не должна быть больше 1000000
                 </StyledErrorContainer>
               )}
               <StyledFormLabel htmlFor="description">
@@ -296,11 +299,11 @@ const EditPage = () => {
                 {...register('description', {
                   required: true,
                   minLength: 10,
-                  maxLength: 400,
+                  maxLength: 500,
                 })}
                 name="description"
                 id="description"
-                cols={40}
+                cols={50}
                 rows={10}
                 defaultValue={foundedBook?.description}
               />
@@ -318,7 +321,7 @@ const EditPage = () => {
               {errors.description &&
                 errors.description.type === 'maxLength' && (
                   <StyledErrorContainer>
-                    Описание не должно превышать 400 символов
+                    Описание не должно превышать 500 символов
                   </StyledErrorContainer>
                 )}
               <StyledFormLabel htmlFor="picture">
