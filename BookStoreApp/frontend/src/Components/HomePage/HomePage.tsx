@@ -1,10 +1,9 @@
 import { Page } from '../Shared/Page';
 import BookListGrid from './BookGrid';
 import { useState, useEffect } from 'react';
-import { getBookListView } from '../../Data/BookData';
+import { getBookListView, BookListView } from '../../Data/BookData';
 import { useParams } from 'react-router-dom';
 import PaginationSectionModern from '../Shared/PaginationSectionModern';
-import { BookListView } from '../../Data/BookData';
 
 export const HomePage = () => {
   const [bookListView, setBookListView] = useState<BookListView | null>(null);

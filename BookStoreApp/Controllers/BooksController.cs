@@ -2,7 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using BookStoreApp.Data;
 using BookStoreApp.Data.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;   
+using System.IO;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BookStoreApp.Controllers
@@ -13,46 +14,47 @@ namespace BookStoreApp.Controllers
     {
         private readonly IStoreRepository _dataRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IBookCache _cache;
         //private readonly IHttpClientFactory _clientFactory;
-        public BooksController(IStoreRepository dataRepository, IUserRepository userRepository, IWebHostEnvironment hostEnvironment)
+        public BooksController(IStoreRepository dataRepository, IUserRepository userRepository, IBookCache bookCache)
         {
             _dataRepository = dataRepository;
             _userRepository = userRepository;
+            _cache = bookCache;
         }
         [HttpGet("{bookId}")]
         public async Task<ActionResult<Book>> GetBookByIdAsync(int bookId){
-            Book? book = await _dataRepository.Books.FirstOrDefaultAsync(b=>b.BookId==bookId);
-            
-            if(book==null){
-                return NotFound();
-            }
-            else{ 
-                if (book.ImageName.Length!=0){
-                        book.ImageSrc = GetImageResponsePath(book.ImageName);}
-                     return book;}
+
+            // Try to get cache data
+            Book? book = _cache.Get(bookId);
+            if(book == null){
+                book = await _dataRepository.Books.FirstOrDefaultAsync(b=>b.BookId==bookId);
+                if(book ==null){
+                    return NotFound();
+                }
+                book.ImageSrc = await GetImageSrcWithUpdateImageName(book);
+                _cache.Set(book);
+                } 
+                return book;
         }
         [HttpGet("page/{page}")]
         public async Task<ActionResult<BookListView>> GetBookListByPageAsync(int page, int pageSize=3){
             var data = await _dataRepository.Books.Skip((page-1)*pageSize).Take(pageSize).ToListAsync();
-            if(data!=null){
-                foreach(Book book in data){
-                    if(book.ImageName.Length!=0){
-                        book.ImageSrc = GetImageResponsePath(book.ImageName);
-                    }
+                if(data == null){
+                    return NotFound();
                 }
-                int itemsCount = _dataRepository.Books.Count();
-                return new BookListView(){BookList = data, PageInfo = new PagingInfo(){TotalItems = itemsCount, CurrentPage = page, PageSize = pageSize}};
-            }
-            else return NotFound();
+                foreach(Book book in data){
+                    book.ImageSrc = await GetImageSrcWithUpdateImageName(book);
+                }
+            int itemsCount = _dataRepository.Books.Count();
+            return new BookListView(){BookList = data, PageInfo = new PagingInfo(){TotalItems = itemsCount, CurrentPage = page, PageSize = pageSize}};
         }
         [HttpGet("allBooks"), Authorize(Roles="admin")]
         public async Task<ActionResult<IEnumerable<Book>>> GetAllBooksAsync(){
            if(_dataRepository.Books.Any()){
                 var data = await _dataRepository.Books.ToListAsync();
                 foreach(Book book in data){
-                    if(book.ImageName.Length!=0){
-                        book.ImageSrc = GetImageResponsePath(book.ImageName);
-                    }
+                    book.ImageSrc = await GetImageSrcWithUpdateImageName(book);
                 }
                 return data;
            } else return NotFound();
@@ -61,12 +63,10 @@ namespace BookStoreApp.Controllers
         [HttpGet]
         public async Task<ActionResult<BookListView>> GetBookListBySearchAsync(string criteria, int page=1, int pageSize=3){
                 var data =  await _dataRepository.Books.Where(book=>book.Name.Contains(criteria)).Skip((page-1)*pageSize).Take(pageSize).ToListAsync();
-                int itemsCount = data.Count();
+                int  itemsCount = await _dataRepository.Books.Where(book=>book.Name.Contains(criteria)).CountAsync();
                 if(data!=null){
                     foreach(Book book in data){
-                        if(book.ImageName.Length!=0){
-                            book.ImageSrc = GetImageResponsePath(book.ImageName);
-                        }
+                        book.ImageSrc = await GetImageSrcWithUpdateImageName(book);
                     }
                     return new BookListView(){BookList = data, PageInfo = new PagingInfo(){TotalItems = itemsCount, CurrentPage = page, PageSize = pageSize, Criteria = criteria}};
                 }
@@ -158,6 +158,7 @@ namespace BookStoreApp.Controllers
                   if(book.Description!=bookPutRequest.Description)
                     book.Description = bookPutRequest.Description!;
                   await _dataRepository.UpdateBookAsync(book);
+                  _cache.Remove(book.BookId);
                   return book;
                 }
             }
@@ -171,6 +172,7 @@ namespace BookStoreApp.Controllers
             else {
                 _dataRepository.DeleteImage(book.ImageName);
                 await _dataRepository.DeleteBookAsync(book);
+                _cache.Remove(bookId);
                 return book;
             }
         }
@@ -185,6 +187,7 @@ namespace BookStoreApp.Controllers
             if(book==null||user==null){
                 return NotFound();
             }else{
+                _cache.Remove(ratingPost.BookId);
                 var selectedRatingsById = await _dataRepository.Ratings.Where(r=>r.BookId==ratingPost.BookId).SelectMany(ratings=>ratings.Users, (ratings, users)=>new{users}).Where(u=>u.users.UserId==user.UserId).FirstOrDefaultAsync();
                 if(selectedRatingsById != null){
                     return BadRequest("Пользователь уже поставил рейтинг выбранной книге");
@@ -213,8 +216,26 @@ namespace BookStoreApp.Controllers
 
         }
         [NonAction]
-        public string GetImageResponsePath(string imageName){
-            return String.Format("{0}://{1}{2}/Images/{3}", Request.Scheme, Request.Host, Request.PathBase, imageName);
+        public string? GetImageResponsePath(string imageName){
+            string newPath = String.Format("{0}://{1}{2}/Images/{3}", Request.Scheme, Request.Host, Request.PathBase, imageName);
+            return _dataRepository.IsImageExists(imageName)?newPath:null;
+        }
+        [NonAction]
+        public async Task<string> GetImageSrcWithUpdateImageName(Book book){
+            if(book.ImageName.Length!=0){
+                string? imageSrc = GetImageResponsePath(book.ImageName);
+
+                // if image does't exist in local storage
+                if(imageSrc == null){
+                    book.ImageName = "";
+                        await _dataRepository.UpdateBookAsync(book);
+                        return "";
+                }
+                else{
+                    return imageSrc;
+                }
+            }
+            else return "";
         }
     }
 }

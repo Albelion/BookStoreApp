@@ -35,7 +35,7 @@ const SearchPage = () => {
       title={
         booksLoading
           ? 'Загрузка...'
-          : bookListView
+          : bookListView?.pageInfo.totalItems !== 0
           ? `Результаты поиска для "${search}"`
           : `Для запроса "${search}" не найдено книг`
       }

@@ -12,12 +12,12 @@ public class BookStoreRepository:IStoreRepository
         context = ctx;
     }
 
-    public IQueryable<Book> Books => context.Books.Include(r=>r.Ratings).ThenInclude(a=>a.Users).Include(a=>a.Authors);
+    public IQueryable<Book> Books => context.Books.Include(r=>r.Ratings).ThenInclude(a=>a.Users).ThenInclude(r=>r.Role).Include(a=>a.Authors);
 
-    public IQueryable<Rating> Ratings => context.Ratings.Include(b=>b.Book).Include(u=>u.Users);
+    public IQueryable<Rating> Ratings => context.Ratings.Include(b=>b.Book).Include(u=>u.Users).ThenInclude(r=>r.Role);
     
 
-    public IQueryable<Author> Authors => context.Authors.Include(a=>a.Books);
+    public IQueryable<Author> Authors => context.Authors.Include(a=>a.Books).ThenInclude(r=>r.Ratings).ThenInclude(a=>a.Users).ThenInclude(r=>r.Role);
 
         public void AddAuthor(Author a)
         {
@@ -27,7 +27,6 @@ public class BookStoreRepository:IStoreRepository
         public void AddRating(Rating r)
         {
             context.Ratings.Add(r);
-            //await context.SaveChangesAsync();
         }
 
         public async Task DeleteAuthorAsync(Author a)
@@ -92,9 +91,16 @@ public class BookStoreRepository:IStoreRepository
 
         public void DeleteImage(string imageName)
         {
-            var imagePath = Path.Combine(_hostEnvironment.ContentRootPath, "Images", imageName);
-            if(System.IO.File.Exists(imagePath))
-                System.IO.File.Delete(imagePath);
+            string imagePath = Path.Combine(_hostEnvironment.ContentRootPath, "Images", imageName);
+            if(IsImageExists(imageName)){
+                System.IO.File.Delete(imagePath);   
+            }                
+        }
+
+        public bool IsImageExists(string imageName)
+        {
+            string imagePath = Path.Combine(_hostEnvironment.ContentRootPath, "Images", imageName);
+            return System.IO.File.Exists(imagePath)?true:false;
         }
     }
 }

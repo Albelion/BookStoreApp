@@ -43,16 +43,18 @@ namespace BookStoreApp
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value))
                 };
             });
+            builder.Services.AddMemoryCache();
+            builder.Services.AddSingleton<IBookCache, BookCache>();
 
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             app.UseCors("CorsPolicy");
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseStaticFiles(new StaticFileOptions{
                 FileProvider = new PhysicalFileProvider(Path.Combine(builder.Environment.ContentRootPath, "Images")),
                 RequestPath = "/Images"
-            });       
+            });
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();

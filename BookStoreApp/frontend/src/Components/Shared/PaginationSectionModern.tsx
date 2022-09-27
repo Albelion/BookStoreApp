@@ -1,11 +1,20 @@
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
-import { StyledWrapper, StyledContainer, StyledButton } from '../Shared/styles';
-import { grey3, grey6, grey2 } from '../Shared/styles';
+import { Link, useNavigate } from 'react-router-dom';
+import {
+  StyledWrapper,
+  StyledContainer,
+  StyledButton,
+  grey3,
+  grey6,
+  grey2,
+} from '../Shared/styles';
 import { HiArrowSmLeft, HiArrowSmRight } from 'react-icons/hi';
-import { useNavigate } from 'react-router-dom';
 
-const StyledPaginationLinks = styled(Link)<{ isactive?: boolean }>`
+const StyledPaginationLinks = styled(Link)<{ $isactive?: boolean }>`
+  @media ${(props) => props.theme.media.phone} {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
   &:hover {
     cursor: pointer;
     background-color: ${(props) =>
@@ -15,22 +24,46 @@ const StyledPaginationLinks = styled(Link)<{ isactive?: boolean }>`
   text-decoration: none;
   color: ${(props) => props.theme.fontColorPrimary};
   background-color: ${(props) =>
-    props.isactive
+    props.$isactive
       ? props.theme.nameOfTheme === 'light'
         ? grey3
         : grey6
       : props.theme.bodyColor};
 `;
+const StyledArrowLeft = styled(HiArrowSmLeft)`
+  font-size: 20px;
+  @media ${(props) => props.theme.media.phone} {
+    font-size: 15px;
+  } ;
+`;
+const StyledArrowRight = styled(HiArrowSmRight)`
+  font-size: 20px;
+  @media ${(props) => props.theme.media.phone} {
+    font-size: 15px;
+  } ;
+`;
 const StyledWrapperPagination = styled(StyledWrapper)`
   border: 1px solid ${grey3};
   border-radius: 10px;
+  @media ${(props) => props.theme.media.phone} {
+    font-size: 0.8rem;
+  } ;
 `;
 const StyledButtonLinkLeft = styled(StyledButton)`
+  @media ${(props) => props.theme.media.phone} {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
   padding: 10px 15px;
   border-radius: 10px 0px 0px 10px;
   &:hover {
     background-color: ${(props) =>
       props.theme.nameOfTheme === 'light' ? grey3 : grey6};
+  }
+  &:disabled {
+    background-color: ${(props) =>
+      props.theme.nameOfTheme === 'light' ? grey2 : grey6};
+    color: ${(props) => props.theme.fontColorSecondary};
   }
 `;
 const StyledButtonLinkRight = styled(StyledButtonLinkLeft)`
@@ -38,6 +71,9 @@ const StyledButtonLinkRight = styled(StyledButtonLinkLeft)`
 `;
 const StyledSymbContainer = styled(StyledContainer)`
   padding: 10px 15px;
+  @media ${(props) => props.theme.media.phone} {
+    padding: 6px 10px;
+  }
   color: ${(props) => props.theme.fontColorSecondary};
 `;
 
@@ -62,6 +98,10 @@ const PaginationSectionModern = ({ ...props }: PaginationSectionProps) => {
   const numPages = Math.ceil(props.numOfAllBooks / props.pageSize);
   // difference between start and end element
   const diff = 4;
+  // number of center viewed elemets
+  const numberOfCentralElements = 3;
+  // number of maximum elements before skip symbol
+  const maxNumberToSkip = 5;
   // Array to store pagination symbol
   let mapArray: any[] = [];
   // next and previous button state
@@ -85,12 +125,18 @@ const PaginationSectionModern = ({ ...props }: PaginationSectionProps) => {
         if (props.currentPage - 1 >= diff) {
           if (props.currentPage === numPages) {
             isNext = false;
-            // left is true and right skip is false
-            mapArray = [
-              1,
-              '...',
-              ...[...Array(3)].map((x, i) => numPages - 2 + i),
-            ];
+            const isLeftSkip = numPages <= maxNumberToSkip ? false : true;
+            if (isLeftSkip) {
+              mapArray = [
+                1,
+                '...',
+                ...[...Array(numberOfCentralElements)].map(
+                  (x, i) => numPages - 2 + i,
+                ),
+              ];
+            } else {
+              mapArray = [...[...Array(numPages)].map((x, i) => i + 1)];
+            }
           } else {
             mapArray = [
               1,
@@ -116,9 +162,14 @@ const PaginationSectionModern = ({ ...props }: PaginationSectionProps) => {
       }
     } else {
       isPrevious = false;
-      const isRightSkip = numPages <= 5 ? false : true;
+      if (props.currentPage === numPages) isNext = false;
+      const isRightSkip = numPages <= maxNumberToSkip ? false : true;
       if (isRightSkip) {
-        mapArray = [...[...Array(3)].map((x, i) => i + 1), '...', 'endSymb'];
+        mapArray = [
+          ...[...Array(numberOfCentralElements)].map((x, i) => i + 1),
+          '...',
+          'endSymb',
+        ];
       } else {
         mapArray = [...[...Array(numPages)].map((x, i) => i + 1)];
       }
@@ -134,7 +185,7 @@ const PaginationSectionModern = ({ ...props }: PaginationSectionProps) => {
               disabled={isPrevious ? false : true}
             >
               <StyledWrapper>
-                <HiArrowSmLeft size="20px" />
+                <StyledArrowLeft />
                 <StyledContainer>Назад</StyledContainer>
               </StyledWrapper>
             </StyledButtonLinkLeft>
@@ -150,7 +201,7 @@ const PaginationSectionModern = ({ ...props }: PaginationSectionProps) => {
               return Number(x) === props.currentPage ? (
                 <StyledPaginationLinks
                   key={i}
-                  isactive={true}
+                  $isactive={true}
                   to={
                     props.search
                       ? `/search?criteria=${props.search}&page=${Number(x)}`
@@ -178,7 +229,7 @@ const PaginationSectionModern = ({ ...props }: PaginationSectionProps) => {
             >
               <StyledWrapper>
                 <StyledContainer>Вперед</StyledContainer>
-                <HiArrowSmRight size="20px" />
+                <StyledArrowRight />
               </StyledWrapper>
             </StyledButtonLinkRight>
           </StyledWrapperPagination>

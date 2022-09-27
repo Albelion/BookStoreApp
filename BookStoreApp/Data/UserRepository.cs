@@ -9,7 +9,7 @@ namespace BookStoreApp.Data{
         {
             _context = ctx;
         }
-        public IQueryable<User> Users => _context.Users.Include(u=>u.Role);
+        public IQueryable<User> Users => _context.Users.Include(r=>r.Role);
 
         public IQueryable<Role> Roles => _context.Roles;
 

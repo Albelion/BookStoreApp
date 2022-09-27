@@ -1,6 +1,7 @@
 import { Page } from '../Shared/Page';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   StyledContainer,
@@ -11,11 +12,21 @@ import {
   grey4,
   grey1,
   purple5,
-  purple3,
+  purple2,
+  purple4,
 } from '../Shared/styles';
 import { BsArrowLeftSquare } from 'react-icons/bs';
 import { Link } from 'react-router-dom';
-import { postOrderAsync, CartItem, PostOrderData } from '../../Data/BookData';
+import SessionManager from '../../SessionManager';
+import {
+  postOrderAsync,
+  CartItem,
+  PostOrderData,
+  NotifyType,
+  onNotify,
+} from '../../Data/BookData';
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 
 type FormData = {
   userName: string;
@@ -137,9 +148,10 @@ const StyledRowSectionWrapper = styled(StyledWrapper)`
 const StyledBuyButton = styled(StyledButton)`
   background-color: ${purple5};
   border-radius: 2px;
-  color: white;
+  color: ${(props) => (props.theme.nameOfTheme === 'light' ? '#fff' : '#000')};
   &:hover {
-    background-color: ${purple3};
+    background-color: ${(props) =>
+      props.theme.nameOfTheme === 'light' ? purple4 : purple2};
   }
 `;
 
@@ -155,11 +167,31 @@ const OrderPage = ({
 }: OrderPageProps) => {
   const deliverPrice = 200;
   const navigate = useNavigate();
+  const [userLoading, setUserLoading] = useState(true);
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
+    setValue,
   } = useForm<FormData>();
+
+  useEffect(() => {
+    let cancelled: boolean = false;
+    const getUserData = SessionManager.getUser();
+    if (getUserData) {
+      if (!cancelled) {
+        if (getUserData?.fullName) setValue('userName', getUserData.fullName);
+        if (getUserData?.email) setValue('email', getUserData.email);
+        if (getUserData?.phoneNumber)
+          setValue('phoneNumber', getUserData.phoneNumber);
+        setUserLoading(false);
+      }
+    }
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   //set loading false
   const submitForm = ({
     userName,
@@ -184,12 +216,21 @@ const OrderPage = ({
       if (result) {
         removeAllCartItems();
         navigate('/sucessOrder');
+      } else {
+        onNotify(
+          NotifyType.ERROR,
+          'При отправке данных заказа произошли ошибки',
+        );
       }
     };
     postDataAsync();
   };
   return (
-    <Page title="Оформление заказа">
+    <Page
+      title={
+        userLoading ? 'Загрузка данных пользователя...' : 'Оформление заказа'
+      }
+    >
       <StyledMainContainer>
         <StyledWrapper>
           <StyledLink to="/cart">
@@ -266,11 +307,10 @@ const OrderPage = ({
                       <StyledInputOrder
                         {...register('phoneNumber', {
                           required: true,
-                          minLength: 1,
-                          maxLength: 8,
+                          maxLength: 12,
                         })}
                         name="phoneNumber"
-                        type="number"
+                        type="text"
                         id="phoneNumber"
                       />
                       {errors.phoneNumber &&
@@ -280,15 +320,9 @@ const OrderPage = ({
                           </StyledErrorContainer>
                         )}
                       {errors.phoneNumber &&
-                        errors.phoneNumber.type === 'minLength' && (
-                          <StyledErrorContainer>
-                            Минимальное количество символов - 1
-                          </StyledErrorContainer>
-                        )}
-                      {errors.phoneNumber &&
                         errors.phoneNumber.type === 'maxLength' && (
                           <StyledErrorContainer>
-                            Поле не должно превышать 8 символов
+                            Поле не должно превышать 12 символов
                           </StyledErrorContainer>
                         )}
                     </StyledWrapper>
@@ -507,6 +541,7 @@ const OrderPage = ({
           </StyledCartInformation>
         </StyledForm>
       </StyledMainContainer>
+      <ToastContainer />
     </Page>
   );
 };

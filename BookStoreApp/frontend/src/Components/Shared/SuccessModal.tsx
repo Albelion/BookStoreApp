@@ -1,4 +1,4 @@
-import { StyledWrapper, StyledContainer } from './styles';
+import { StyledWrapper } from './styles';
 import {
   StyledBackground,
   StyledSuccessModalWrapper,

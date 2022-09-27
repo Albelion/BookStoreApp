@@ -1,4 +1,4 @@
-import { StyledWrapper, StyledContainer, StyledLabel } from './styles';
+import { StyledWrapper, StyledLabel } from './styles';
 import {
   StyledBackground,
   StyledModalWrapper,
@@ -10,17 +10,21 @@ import {
   StyledExitContainer,
   StyledLoadingBackground,
   StyledMessageLoading,
+  StyledErrorContainerWithMaxSize,
+  StyledButtonWrapperWithMedia,
+  StyledMainModelItemsWrapperWithMedia,
 } from './modalWindowStyles';
 import { IoMdClose } from 'react-icons/io';
-import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
-import { postRegisterDataAsync } from '../../Data/BookData';
+import {
+  postRegisterDataAsync,
+  NotifyType,
+  onNotify,
+} from '../../Data/BookData';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import SuccessModal from './SuccessModal';
-
-const StyledErrorContainer = styled(StyledContainer)`
-  color: red;
-`;
 
 interface ReginsterModalProps {
   onOpenLoginModal: () => void;
@@ -30,6 +34,7 @@ type FormData = {
   userFirstName: string;
   userLastName: string;
   email: string;
+  phoneNumber: string;
   password: string;
   passwordConfirm: string;
 };
@@ -53,11 +58,14 @@ const RegisterModal = ({
     formData.append('firstName', data.userFirstName);
     formData.append('lastName', data.userLastName);
     formData.append('email', data.email);
+    formData.append('phoneNumber', data.phoneNumber);
     formData.append('password', data.password);
     await wait(3000);
     const postRegisterData = async () => {
       const result = await postRegisterDataAsync(formData);
-      setSuccessfullySubmitted(result ? true : false);
+      if (result.ok) {
+        setSuccessfullySubmitted(result ? true : false);
+      } else onNotify(NotifyType.ERROR, String(result.body));
     };
     postRegisterData();
   };
@@ -80,18 +88,13 @@ const RegisterModal = ({
               alignItems="center"
             >
               <StyledMessageLoading>
-                Попытка входа, пожалуйста подождите...
+                Попытка регистрации нового пользователя, пожалуйста подождите...
               </StyledMessageLoading>
             </StyledWrapper>
           </StyledLoadingBackground>
         )}
         <form onSubmit={handleSubmit(submitForm)}>
-          <StyledWrapper
-            gap="20px"
-            flexDirection="column"
-            justifyContent="start"
-            alignItems="center"
-          >
+          <StyledMainModelItemsWrapperWithMedia>
             <StyledExitContainer>
               <StyledCancelButton onClick={() => onCloseRegisterModal()}>
                 <IoMdClose size="20px" />
@@ -117,15 +120,15 @@ const RegisterModal = ({
               />
               {errors.userFirstName &&
                 errors.userFirstName.type === 'required' && (
-                  <StyledErrorContainer>
+                  <StyledErrorContainerWithMaxSize>
                     Введите имя пользователя
-                  </StyledErrorContainer>
+                  </StyledErrorContainerWithMaxSize>
                 )}
               {errors.userFirstName &&
                 errors.userFirstName.type === 'maxLength' && (
-                  <StyledErrorContainer>
+                  <StyledErrorContainerWithMaxSize>
                     Имя пользователя не должно превышать 20 символов
-                  </StyledErrorContainer>
+                  </StyledErrorContainerWithMaxSize>
                 )}
             </StyledWrapper>
             <StyledWrapper
@@ -145,15 +148,15 @@ const RegisterModal = ({
               />
               {errors.userLastName &&
                 errors.userLastName.type === 'required' && (
-                  <StyledErrorContainer>
+                  <StyledErrorContainerWithMaxSize>
                     Введите фамилию пользователя
-                  </StyledErrorContainer>
+                  </StyledErrorContainerWithMaxSize>
                 )}
               {errors.userLastName &&
                 errors.userLastName.type === 'maxLength' && (
-                  <StyledErrorContainer>
+                  <StyledErrorContainerWithMaxSize>
                     Фамилия пользователя не должна превышать 20 символов
-                  </StyledErrorContainer>
+                  </StyledErrorContainerWithMaxSize>
                 )}
             </StyledWrapper>
             <StyledWrapper
@@ -172,12 +175,40 @@ const RegisterModal = ({
                 id="email"
               />
               {errors.email && errors.email.type === 'required' && (
-                <StyledErrorContainer>Введите E-mail</StyledErrorContainer>
+                <StyledErrorContainerWithMaxSize>
+                  Введите E-mail
+                </StyledErrorContainerWithMaxSize>
               )}
               {errors.email && errors.email.type === 'maxLength' && (
-                <StyledErrorContainer>
+                <StyledErrorContainerWithMaxSize>
                   Email не должен превышать 20 символов
-                </StyledErrorContainer>
+                </StyledErrorContainerWithMaxSize>
+              )}
+            </StyledWrapper>
+            <StyledWrapper
+              flexDirection="column"
+              justifyContent="start"
+              alignItems="start"
+            >
+              <StyledLabel htmlFor="phoneNumber">Номер телефона</StyledLabel>
+              <StyledInputLogin
+                {...register('phoneNumber', {
+                  required: true,
+                  maxLength: 12,
+                })}
+                name="phoneNumber"
+                type="text"
+                id="phoneNumber"
+              />
+              {errors.email && errors.email.type === 'required' && (
+                <StyledErrorContainerWithMaxSize>
+                  Введите номер телефона
+                </StyledErrorContainerWithMaxSize>
+              )}
+              {errors.email && errors.email.type === 'maxLength' && (
+                <StyledErrorContainerWithMaxSize>
+                  Номер телефона не может превышать 12 символов
+                </StyledErrorContainerWithMaxSize>
               )}
             </StyledWrapper>
             <StyledWrapper
@@ -197,17 +228,19 @@ const RegisterModal = ({
                 id="password"
               />
               {errors.password && errors.password.type === 'required' && (
-                <StyledErrorContainer>Введите пароль</StyledErrorContainer>
+                <StyledErrorContainerWithMaxSize>
+                  Введите пароль
+                </StyledErrorContainerWithMaxSize>
               )}
               {errors.password && errors.password.type === 'minLength' && (
-                <StyledErrorContainer>
+                <StyledErrorContainerWithMaxSize>
                   Пароль не должен быть меньше 5 символов
-                </StyledErrorContainer>
+                </StyledErrorContainerWithMaxSize>
               )}
               {errors.password && errors.password.type === 'maxLength' && (
-                <StyledErrorContainer>
+                <StyledErrorContainerWithMaxSize>
                   Пароль не должен превышать 20 символов
-                </StyledErrorContainer>
+                </StyledErrorContainerWithMaxSize>
               )}
             </StyledWrapper>
             <StyledWrapper
@@ -229,26 +262,29 @@ const RegisterModal = ({
               />
               {errors.passwordConfirm &&
                 errors.passwordConfirm.type === 'required' && (
-                  <StyledErrorContainer>Повторите пароль</StyledErrorContainer>
+                  <StyledErrorContainerWithMaxSize>
+                    Повторите пароль
+                  </StyledErrorContainerWithMaxSize>
                 )}
               {errors.passwordConfirm &&
                 errors.passwordConfirm.type === 'validate' && (
-                  <StyledErrorContainer>
+                  <StyledErrorContainerWithMaxSize>
                     Пароли должны совпадать
-                  </StyledErrorContainer>
+                  </StyledErrorContainerWithMaxSize>
                 )}
             </StyledWrapper>
-            <StyledWrapper gap="10px" margin="30px 10px 10px 10px">
+            <StyledButtonWrapperWithMedia>
               <StyledButtonSuccessModal>
                 Сохранить данные
               </StyledButtonSuccessModal>
               <StyledButtonNormalModal onClick={() => onOpenLoginModal()}>
                 Уже есть аккаунт?
               </StyledButtonNormalModal>
-            </StyledWrapper>
-          </StyledWrapper>
+            </StyledButtonWrapperWithMedia>
+          </StyledMainModelItemsWrapperWithMedia>
         </form>
       </StyledModalWrapper>
+      <ToastContainer />s
     </StyledBackground>
   );
 };

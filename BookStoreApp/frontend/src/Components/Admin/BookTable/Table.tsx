@@ -4,14 +4,17 @@ import {
   getAverageRating,
   deleteBookAsync,
   getAllBooksAsync,
+  NotifyType,
+  onNotify,
 } from '../../../Data/BookData';
 import TableData from './TableData';
 import TableHeader from './TableHeader';
 import { useEffect, useState } from 'react';
-import { StyledWrapper, StyledButton, grey3, grey6 } from '../../Shared/styles';
+import { StyledWrapper, StyledButton } from '../../Shared/styles';
 import { Link } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
-import { toast, ToastContainer } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
+import { v4 as uuidv4 } from 'uuid';
 
 const StyledTable = styled.table``;
 const StyledTableThead = styled.thead``;
@@ -24,6 +27,7 @@ const StyledLink = styled(Link)`
   padding: 5px 8px;
 `;
 const StyledDeleteButton = styled(StyledButton)`
+  color: red;
   padding: 5px 8px;
 `;
 
@@ -32,9 +36,12 @@ const StyledEditLink = styled(StyledLink)`
 `;
 const StyledCreateLink = styled(StyledLink)`
   margin-top: 20px;
-  background-color: ${(props) =>
-    (props.theme.nameOfTheme = 'light' ? grey6 : grey3)};
+  border-radius: 5px;
+  background-color: #2ed853;
   color: ${(props) => props.theme.fontColorPrimary};
+  &:hover {
+    background-color: #2ac54d;
+  }
 `;
 
 export enum SortParams {
@@ -50,17 +57,6 @@ export enum SortParams {
 interface TableProps {
   books: Book[];
 }
-const notifyToDeleteItem = () => {
-  toast.success('Книга удалена', {
-    position: 'bottom-right',
-    autoClose: 3000,
-    hideProgressBar: true,
-    closeOnClick: false,
-    pauseOnHover: false,
-    draggable: false,
-    progress: undefined,
-  });
-};
 
 const Table = ({ books }: TableProps) => {
   const [isActiveSort, setIsActiveSort] = useState({
@@ -163,7 +159,7 @@ const Table = ({ books }: TableProps) => {
     const deleteAction = async () => {
       const result = await deleteBookAsync(bookId);
       if (result) {
-        notifyToDeleteItem();
+        onNotify(NotifyType.SUCCESS, 'Книга удалена');
         const getUpdatedBookCollection = async () => {
           const bookResult = await getAllBooksAsync();
           if (bookResult) {
@@ -184,7 +180,7 @@ const Table = ({ books }: TableProps) => {
               {SortParamsArray.map((x, i) => {
                 return (
                   <TableHeader
-                    key={i}
+                    key={uuidv4()}
                     onSortedUp={onSortedUp}
                     onSortedDown={onSortedDown}
                     sortParams={x}
@@ -196,20 +192,19 @@ const Table = ({ books }: TableProps) => {
             </StyledTableRow>
           </StyledTableThead>
           <StyledTableBody>
-            {sortedBooks.map((book, i) => {
-              let counter = sortedBooks.length * i;
+            {sortedBooks.map((book) => {
               return (
                 <StyledTableRow>
-                  <TableData key={++counter} inform={book.bookId} />
-                  <TableData key={++counter} inform={book.name} />
-                  <TableData key={++counter} inform={book.genre} />
-                  <TableData key={++counter} inform={book.pageNumber} />
-                  <TableData key={++counter} inform={book.publishYear} />
+                  <TableData key={uuidv4()} inform={book.bookId} />
+                  <TableData key={uuidv4()} inform={book.name} />
+                  <TableData key={uuidv4()} inform={book.genre} />
+                  <TableData key={uuidv4()} inform={book.pageNumber} />
+                  <TableData key={uuidv4()} inform={book.publishYear} />
                   <TableData
-                    key={++counter}
+                    key={uuidv4()}
                     inform={getAverageRating(book.ratings)}
                   />
-                  <TableData key={++counter} inform={book.price} />
+                  <TableData key={uuidv4()} inform={book.price} />
                   <StyledTableDataEdit>
                     <StyledWrapper>
                       <StyledEditLink to={`/edit/${book.bookId}`}>

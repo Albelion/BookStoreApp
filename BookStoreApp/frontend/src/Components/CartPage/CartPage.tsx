@@ -1,13 +1,11 @@
 import { Page } from '../Shared/Page';
-//import { StoredBookInCart } from '../../App';
 import CartItemComp from './CartItemComp';
-//import { useState, useEffect } from 'react';
 import { CartItem } from '../../Data/BookData';
 import { StyledWrapper, StyledContainer, StyledButton } from '../Shared/styles';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Auth';
-import { Link } from 'react-router-dom';
+
 interface CartPageProps {
   cartItems: CartItem[];
   onRemove: (bookId: number) => void;
@@ -22,6 +20,7 @@ const StyledEmptyCartLabel = styled(StyledContainer)`
   padding: 2em;
   color: ${(props) => props.theme.fontColorSecondary};
 `;
+
 export const CartPage = ({
   cartItems,
   onRemove,
@@ -30,16 +29,6 @@ export const CartPage = ({
 }: CartPageProps) => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
-  //const countHandler = () => {};
-  /*useEffect(() => {
-    if (storedBooks.length !== 0) {
-      setTotalPrice(() =>
-        storedBooks
-          .map((s) => s.book.price * s.qty)
-          .reduce((sum, current) => sum + current),
-      );
-    }
-  }, [onRemove, onChangeQty, storedBooks]); */
   const checkUserLogin = () => {
     isAuthenticated ? navigate('/order') : onOpenLoginModal();
   };

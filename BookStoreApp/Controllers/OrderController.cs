@@ -16,6 +16,9 @@ namespace BookStoreApp.Controllers{
         }
         [HttpPost, Authorize]
         public ActionResult<Order> PostOrder(Order order){
+            if(!ModelState.IsValid){
+                return BadRequest(ModelState);
+            }
             Order? newOrder = _dataRepository.SaveOrder(order);
             return newOrder ==null?NotFound():newOrder;
         }

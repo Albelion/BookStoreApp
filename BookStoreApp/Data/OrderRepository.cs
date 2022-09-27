@@ -9,12 +9,14 @@ namespace BookStoreApp.Data{
             _context = ctx;
         }
 
-        public IQueryable<Order> Orders => _context.Orders.Include(l=>l.CartItems).ThenInclude(b=>b.Book).ThenInclude(a=>a.Authors).Include(l=>l.CartItems).ThenInclude(b=>b.Book).ThenInclude(r=>r.Ratings);
+        public IQueryable<Order> Orders => _context.Orders.Include(l=>l.CartItems).ThenInclude(b=>b.Book).ThenInclude(a=>a.Authors).Include(l=>l.CartItems).ThenInclude(b=>b.Book).ThenInclude(r=>r.Ratings).ThenInclude(u=>u.Users).ThenInclude(r=>r.Role);
 
         public Order? SaveOrder(Order order)
         {
             if(order.OrderId==0){
-                _context.AttachRange(order.CartItems.Select(l=>l.Book));
+                foreach(var cartItem in order.CartItems){
+                    _context.Entry(cartItem.Book).State = EntityState.Unchanged;
+                }
                 _context.Orders.Add(order);
             }
             _context.SaveChanges();

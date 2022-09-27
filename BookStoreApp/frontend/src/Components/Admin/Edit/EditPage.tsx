@@ -1,46 +1,29 @@
 import { Page } from '../../Shared/Page';
-import styled from 'styled-components';
 import {
   StyledWrapper,
-  StyledContainer,
-  StyledButton,
+  StyledInput,
+  StyledLabel,
+  StyledFieldSet,
+  StyledDescriptionText,
+  StyledErrorContainer,
+  StyledPostFormButton,
+  StyledSelectList,
 } from '../../Shared/styles';
 import { useForm } from 'react-hook-form';
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { getBookAsync, Book } from '../../../Data/BookData';
-import { grey5 } from '../../Shared/styles';
-import { editBookAsync } from '../../../Data/BookData';
+import {
+  getBookAsync,
+  Book,
+  editBookAsync,
+  printAuthorsName,
+  listOfGenre,
+  NotifyType,
+  onNotify,
+} from '../../../Data/BookData';
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 
-const StyledInput = styled.input`
-  padding: 8px 10px;
-  border: 1px solid ${grey5};
-  border-radius: 3px;
-  :focus {
-    outline-color: ${grey5};
-  }
-  width: 100%;
-  height: 35px;
-`;
-
-const StyledDescriptionText = styled.textarea`
-  padding: 8px 10px;
-  border: 1px solid ${grey5};
-  border-radius: 3px;
-  :focus {
-    outline-color: ${grey5};
-  }
-`;
-const StyledFormLabel = styled.label`
-  font-weight: bold;
-`;
-const StyledErrorContainer = styled(StyledContainer)`
-  color: red;
-`;
-const StyledFieldSet = styled.fieldset`
-  padding: 10px 15px;
-  width: 80%;
-`;
 type FormData = {
   hidden: number;
   bookName: string;
@@ -87,6 +70,14 @@ const EditPage = () => {
     postAuthors.forEach((a) => formData.append('authors', a));
     const result = await editBookAsync(Number(bookId), formData);
     setSuccessfullySubmitted(result ? true : false);
+    if (result) {
+      onNotify(NotifyType.SUCCESS, 'Книга успешно изменена');
+    } else {
+      onNotify(
+        NotifyType.ERROR,
+        'При отправке изменений возникли непредвиденные ошибки',
+      );
+    }
   };
 
   useEffect(() => {
@@ -98,10 +89,7 @@ const EditPage = () => {
         setBooksLoading(false);
         //set formValues:
         if (foundedBook) {
-          setValue(
-            'authors',
-            foundedBook.authors.map((a) => a.name)?.join(', '),
-          );
+          setValue('authors', printAuthorsName(foundedBook.authors));
           setValue('bookName', foundedBook.name);
           setValue('pageNumber', foundedBook.pageNumber);
           setValue('price', foundedBook.price);
@@ -114,9 +102,8 @@ const EditPage = () => {
     if (bookId) {
       getBook(Number(bookId));
     }
-    return () => {
-      cancelled = true;
-    };
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bookId]);
   return (
     <Page title={booksLoading ? 'Загрузка...' : 'Изменение параметров книги'}>
@@ -131,9 +118,7 @@ const EditPage = () => {
               flexDirection="column"
               alignItems="start"
             >
-              <StyledFormLabel htmlFor="bookName">
-                Название книги:
-              </StyledFormLabel>
+              <StyledLabel htmlFor="bookName">Название книги:</StyledLabel>
               <StyledInput
                 {...register('bookName', {
                   //required: true,
@@ -160,7 +145,7 @@ const EditPage = () => {
                   Название книги не должно превышать 50 символов
                 </StyledErrorContainer>
               )}
-              <StyledFormLabel htmlFor="authors">Авторы</StyledFormLabel>
+              <StyledLabel htmlFor="authors">Авторы</StyledLabel>
               <StyledInput
                 {...register('authors', {
                   //required: true,
@@ -184,34 +169,22 @@ const EditPage = () => {
                   Поле не должно превышать 50 символов
                 </StyledErrorContainer>
               )}
-              <StyledFormLabel htmlFor="genre">Жанр: </StyledFormLabel>
-              <StyledInput
-                {...register('genre', {
-                  required: true,
-                  minLength: 1,
-                  maxLength: 50,
-                })}
+              <StyledLabel htmlFor="genre">Жанр: </StyledLabel>
+              <StyledSelectList
+                {...register('genre', { required: true })}
                 name="genre"
-                type="text"
                 id="genre"
-                defaultValue={foundedBook?.genre}
-              />
+              >
+                {listOfGenre.map((name) => (
+                  <option value={name}>{name}</option>
+                ))}
+              </StyledSelectList>
               {errors.genre && errors.genre.type === 'required' && (
                 <StyledErrorContainer>Введите жанр книги</StyledErrorContainer>
               )}
-              {errors.genre && errors.genre.type === 'minLength' && (
-                <StyledErrorContainer>
-                  В названии должен быть как минимум 1 символ
-                </StyledErrorContainer>
-              )}
-              {errors.genre && errors.genre.type === 'maxLength' && (
-                <StyledErrorContainer>
-                  Название жанра не должно превышать 50 символов
-                </StyledErrorContainer>
-              )}
-              <StyledFormLabel htmlFor="pageNumber">
+              <StyledLabel htmlFor="pageNumber">
                 Количество страниц:
-              </StyledFormLabel>
+              </StyledLabel>
               <StyledInput
                 {...register('pageNumber', {
                   max: 1000000,
@@ -238,9 +211,7 @@ const EditPage = () => {
                   Количество страниц не может быть больше 1000000
                 </StyledErrorContainer>
               )}
-              <StyledFormLabel htmlFor="publishYear">
-                Год публикации:
-              </StyledFormLabel>
+              <StyledLabel htmlFor="publishYear">Год публикации:</StyledLabel>
               <StyledInput
                 {...register('publishYear', {
                   required: true,
@@ -267,7 +238,7 @@ const EditPage = () => {
                   Максимальное значение: 2025
                 </StyledErrorContainer>
               )}
-              <StyledFormLabel htmlFor="price">Цена: </StyledFormLabel>
+              <StyledLabel htmlFor="price">Цена: </StyledLabel>
               <StyledInput
                 {...register('price', {
                   required: true,
@@ -292,19 +263,15 @@ const EditPage = () => {
                   Цена не должна быть больше 1000000
                 </StyledErrorContainer>
               )}
-              <StyledFormLabel htmlFor="description">
-                Описание книги:
-              </StyledFormLabel>
+              <StyledLabel htmlFor="description">Описание книги:</StyledLabel>
               <StyledDescriptionText
                 {...register('description', {
                   required: true,
                   minLength: 10,
-                  maxLength: 500,
+                  maxLength: 2000,
                 })}
                 name="description"
                 id="description"
-                cols={50}
-                rows={10}
                 defaultValue={foundedBook?.description}
               />
               {errors.description && errors.description.type === 'required' && (
@@ -324,9 +291,9 @@ const EditPage = () => {
                     Описание не должно превышать 500 символов
                   </StyledErrorContainer>
                 )}
-              <StyledFormLabel htmlFor="picture">
+              <StyledLabel htmlFor="picture">
                 Выбрать другое изображение:
-              </StyledFormLabel>
+              </StyledLabel>
               <StyledInput
                 {...register('picture')}
                 name="picture"
@@ -334,11 +301,14 @@ const EditPage = () => {
                 id="picture"
                 //value={foundedBook?.imageSrc}
               />
-              <StyledButton type="submit">Изменить</StyledButton>
+              <StyledPostFormButton type="submit">
+                Изменить
+              </StyledPostFormButton>
             </StyledWrapper>
           </form>
         </StyledFieldSet>
       </StyledWrapper>
+      <ToastContainer />
     </Page>
   );
 };

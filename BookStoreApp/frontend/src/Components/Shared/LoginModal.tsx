@@ -1,4 +1,4 @@
-import { StyledWrapper, StyledContainer, StyledLabel } from './styles';
+import { StyledWrapper, StyledLabel } from './styles';
 import {
   StyledBackground,
   StyledModalWrapper,
@@ -10,18 +10,15 @@ import {
   StyledExitContainer,
   StyledLoadingBackground,
   StyledMessageLoading,
+  StyledErrorContainerWithMaxSize,
+  StyledButtonWrapperWithMedia,
+  StyledMainModelItemsWrapperWithMedia,
 } from './modalWindowStyles';
 import { IoMdClose } from 'react-icons/io';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
-import styled from 'styled-components';
 import { useAuth } from '../../Auth';
-//import SessionManager from '../../SessionManager';
 import SuccessModal from './SuccessModal';
-
-const StyledErrorContainer = styled(StyledContainer)`
-  color: red;
-`;
 
 interface LoginModalProps {
   onCloseLoginModal: () => void;
@@ -83,12 +80,7 @@ const LoginModal = ({
           </StyledLoadingBackground>
         )}
         <form onSubmit={handleSubmit(submitForm)}>
-          <StyledWrapper
-            gap="20px"
-            flexDirection="column"
-            justifyContent="start"
-            alignItems="center"
-          >
+          <StyledMainModelItemsWrapperWithMedia>
             <StyledExitContainer>
               <StyledCancelButton onClick={() => onCloseLoginModal()}>
                 <IoMdClose size="20px" />
@@ -113,12 +105,14 @@ const LoginModal = ({
                 id="email"
               />
               {errors.email && errors.email.type === 'required' && (
-                <StyledErrorContainer>Введите E-mail</StyledErrorContainer>
+                <StyledErrorContainerWithMaxSize>
+                  Введите E-mail
+                </StyledErrorContainerWithMaxSize>
               )}
               {errors.email && errors.email.type === 'maxLength' && (
-                <StyledErrorContainer>
+                <StyledErrorContainerWithMaxSize>
                   Пароль не должен превышать 20 символов
-                </StyledErrorContainer>
+                </StyledErrorContainerWithMaxSize>
               )}
             </StyledWrapper>
             <StyledWrapper
@@ -138,26 +132,28 @@ const LoginModal = ({
                 id="password"
               />
               {errors.password && errors.password.type === 'required' && (
-                <StyledErrorContainer>Введите пароль</StyledErrorContainer>
+                <StyledErrorContainerWithMaxSize>
+                  Введите пароль
+                </StyledErrorContainerWithMaxSize>
               )}
               {errors.password && errors.password.type === 'minLength' && (
-                <StyledErrorContainer>
+                <StyledErrorContainerWithMaxSize>
                   Пароль не должен быть меньше 5 символов
-                </StyledErrorContainer>
+                </StyledErrorContainerWithMaxSize>
               )}
               {errors.password && errors.password.type === 'maxLength' && (
-                <StyledErrorContainer>
+                <StyledErrorContainerWithMaxSize>
                   Пароль не должен превышать 20 символов
-                </StyledErrorContainer>
+                </StyledErrorContainerWithMaxSize>
               )}
             </StyledWrapper>
-            <StyledWrapper gap="10px" margin="30px 10px 10px 10px">
+            <StyledButtonWrapperWithMedia>
               <StyledButtonSuccessModal>Войти</StyledButtonSuccessModal>
               <StyledButtonNormalModal onClick={() => onOpenReginsterModal()}>
                 Зарегистрироваться
               </StyledButtonNormalModal>
-            </StyledWrapper>
-          </StyledWrapper>
+            </StyledButtonWrapperWithMedia>
+          </StyledMainModelItemsWrapperWithMedia>
         </form>
       </StyledModalWrapper>
     </StyledBackground>

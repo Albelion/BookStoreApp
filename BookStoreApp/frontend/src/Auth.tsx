@@ -72,6 +72,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
               result.token,
               result.userId,
               result.role,
+              result.phoneNumber,
+              result.fullName,
             );
             setIsAuthenticated(() => true);
             setUser(() => SessionManager.getUser());

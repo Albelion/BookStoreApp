@@ -1,8 +1,13 @@
 import styled from 'styled-components';
-import { StyledContainer, StyledWrapper, StyledButton } from '../Shared/styles';
+import {
+  StyledContainer,
+  StyledWrapper,
+  StyledButton,
+  grey1,
+  purple5,
+} from '../Shared/styles';
 import { useTheme } from 'styled-components';
 import { Link } from 'react-router-dom';
-import { grey1, purple5 } from '../Shared/styles';
 import { useAuth } from '../../Auth';
 import { MdOutlineLightMode, MdOutlineNightlight } from 'react-icons/md';
 

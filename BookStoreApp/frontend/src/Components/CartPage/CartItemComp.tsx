@@ -1,10 +1,15 @@
 import styled from 'styled-components';
-import { StyledWrapper, StyledContainer, StyledButton } from '../Shared/styles';
+import {
+  StyledWrapper,
+  StyledContainer,
+  StyledButton,
+  grey3,
+  ImageDefault,
+} from '../Shared/styles';
 import React from 'react';
-import { grey3 } from '../Shared/styles';
-import { CartItem } from '../../Data/BookData';
+import { CartItem, printAuthorsName } from '../../Data/BookData';
 
-const StyledImageCartWrapper = styled.img`
+const StyledImageCartWrapper = styled(ImageDefault)`
   width: 100%;
   border-radius: 0;
   box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
@@ -72,20 +77,18 @@ const StyledNameBookContainer = styled(StyledContainer)`
   }
 `;
 const StyledImageWrapper = styled(StyledWrapper)`
+  resize: both;
   @media ${(props) => props.theme.media.pc} {
-    resize: both;
     max-width: 210px;
     max-height: 300px;
   }
   @media ${(props) => props.theme.media.phone} {
     max-width: 100px;
     max-height: 170px;
-    resize: both;
   }
   @media ${(props) => props.theme.media.tablet} {
     max-width: 160px;
     max-height: 250px;
-    resize: both;
   }
 `;
 const StyledMediaWrapper = styled(StyledWrapper)`
@@ -94,7 +97,7 @@ const StyledMediaWrapper = styled(StyledWrapper)`
   }
   @media ${(props) => props.theme.media.tablet} {
     display: none;
-  } ;
+  }
 `;
 const StyledMediaWrapperPhoneAndTablet = styled(StyledWrapper)`
   @media ${(props) => props.theme.media.pc} {
@@ -119,22 +122,12 @@ const CartItemComp = ({
   const onChangeHandle = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const numOfBooks = Number(event.target.value);
     onChangeQty(storedBook.book.bookId, numOfBooks);
-    //setNumItems(() => numOfBooks);
   };
-  /*useEffect(() => {
-    setNumItems(() => storedBook.qty);
-  }, []);*/
   return (
     <StyledContainer padding="0px 10px" margin="25px 0px">
       <StyledMainWrapperCart alignItems="top" justifyContent="start" gap="25px">
         <StyledImageWrapper>
-          <StyledImageCartWrapper
-            src={
-              storedBook.book.imageName === ''
-                ? '/Images/noimage.jpg'
-                : storedBook.book.imageSrc
-            }
-          />
+          <StyledImageCartWrapper imageSrc={storedBook.book.imageSrc} />
         </StyledImageWrapper>
 
         <StyledWrapper alignItems="top" flex="1 1 auto" gap="10px">
@@ -143,7 +136,7 @@ const CartItemComp = ({
               {storedBook.book.name}
             </StyledNameBookContainer>
             <StyledAuthorContainer>
-              {storedBook.book.authors.map((a) => a.name)}
+              {printAuthorsName(storedBook.book.authors)}
             </StyledAuthorContainer>
             <StyledMediaWrapperPhoneAndTablet
               flexDirection="column"
@@ -183,7 +176,6 @@ const CartItemComp = ({
                 >
                   Удалить
                 </StyledMenuButton>
-                <StyledMenuButton>Добавить в избранное</StyledMenuButton>
               </StyledWrapper>
             </StyledRemoveSection>
           </StyledFirstPartInform>
@@ -223,7 +215,6 @@ const CartItemComp = ({
           >
             Удалить
           </StyledMenuButton>
-          <StyledMenuButton>Добавить в избранное</StyledMenuButton>
         </StyledWrapper>
       </StyledRemoveSectionPhone>
     </StyledContainer>

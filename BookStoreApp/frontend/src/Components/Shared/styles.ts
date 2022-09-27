@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { defaultNoImageSrc } from '../../Data/BookData';
 // Create colorful pallete
 // Purple styles
 export const purple1: string = '#EDE1F3';
@@ -31,7 +32,7 @@ export const StyledButton = styled.button<ButtonProps>`
   &:hover {
     cursor: pointer;
     background-color: ${(props) =>
-      props.theme.nameOfTheme === 'light' ? grey3 : grey1};
+      props.theme.nameOfTheme === 'light' ? grey3 : purple5};
   }
   align-self: ${(props) => props.align || 'stretch'};
   background-color: ${(props) =>
@@ -62,6 +63,8 @@ export const StyledFixedWidthSectionContainer = styled(StyledContainer)`
   max-width: 1140px;
   width: 100%;
 `;
+
+// Form Styles
 export const StyledInput = styled.input`
   padding: 8px 10px;
   border: 1px solid ${grey5};
@@ -74,6 +77,43 @@ export const StyledInput = styled.input`
 `;
 export const StyledLabel = styled.label`
   font-weight: bold;
+`;
+export const StyledErrorContainer = styled(StyledContainer)`
+  color: red;
+`;
+export const StyledFieldSet = styled.fieldset`
+  padding: 10px 15px;
+  width: 80%;
+`;
+export const StyledDescriptionText = styled.textarea`
+  resize: none;
+  width: 100%;
+  height: 150px;
+  padding: 8px 10px;
+  border: 1px solid ${grey5};
+  border-radius: 3px;
+  :focus {
+    outline-color: ${grey5};
+  }
+`;
+export const StyledSelectList = styled.select`
+  width: 100%;
+  padding: 2px 10px;
+  height: 35px;
+`;
+export const StyledPostFormButton = styled(StyledButton)`
+  background-color: ${purple5};
+  color: ${(props) => props.theme.fontColorPrimary};
+  font-weight: bold;
+  border-radius: 3px;
+  padding: 10px 8px;
+  &:hover {
+    background-color: ${purple3};
+  }
+  &:disabled {
+    background-color: ${grey4};
+    color: ${grey6};
+  }
 `;
 
 // Styled Flex Wrapper
@@ -105,3 +145,25 @@ export const StyledWrapper = styled.div<WrapperProps>`
   position: ${(props) => props.position || 'static'};
   flex-wrap: ${(props) => props.flexWrap || 'no-wrap'};
 `;
+
+// Main wrapper
+export const StyledMainWrapperContainer = styled(StyledWrapper)`
+  max-width: 1140px;
+  margin: auto;
+  flex-direction: column;
+`;
+
+// Styled Image by Default
+interface DefaultImageProps {
+  imageSrc: string;
+}
+
+export const ImageDefault = styled.img.attrs(
+  ({ imageSrc }: DefaultImageProps): any => ({
+    src: imageSrc.length === 0 ? defaultNoImageSrc : imageSrc,
+    onError: (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+      (e.target as HTMLImageElement).onerror = null;
+      (e.target as HTMLImageElement).src = defaultNoImageSrc;
+    },
+  }),
+)``;

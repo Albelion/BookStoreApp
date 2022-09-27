@@ -7,5 +7,7 @@ namespace BookStoreApp.Data.Models{
         public int CartItemId { get; set; }
         public Book Book { get; set; } = new();
         public int Quantity { get; set; }
+        public Order? Order { get; set; }
+        public int OrderId { get; set; }
     }
 }

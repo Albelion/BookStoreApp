@@ -4,6 +4,7 @@ namespace BookStoreApp.Data.Models{
         public string FirstName { get; set; } = String.Empty;
         public string LastName { get; set; } = String.Empty;
         public string Email { get; set; } = String.Empty;
+        public string PhoneNumber { get; set; } = String.Empty;
         public Role Role {get; set; } = new Role();
         public byte[] PasswordHash { get; set; } = Array.Empty<byte>();
         public byte[] PasswordSalt { get; set; }= Array.Empty<byte>();

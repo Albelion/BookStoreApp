@@ -2,8 +2,7 @@ import { Page } from '../Shared/Page';
 import styled from 'styled-components';
 import { BsArrowLeftSquare } from 'react-icons/bs';
 import { Link } from 'react-router-dom';
-import { StyledWrapper, StyledContainer } from '../Shared/styles';
-import { purple5 } from '../Shared/styles';
+import { StyledWrapper, StyledContainer, purple5 } from '../Shared/styles';
 
 const StyledLink = styled(Link)`
   margin-bottom: 1em;

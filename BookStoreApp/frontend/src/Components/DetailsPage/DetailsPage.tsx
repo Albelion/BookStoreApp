@@ -1,17 +1,25 @@
 import { Page } from '../Shared/Page';
 import styled from 'styled-components';
-import { Book } from '../../Data/BookData';
+import {
+  Book,
+  getBookAsync,
+  getAverageRating,
+  CartItem,
+  printAuthorsName,
+} from '../../Data/BookData';
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { StyledWrapper, StyledContainer, StyledButton } from '../Shared/styles';
+import {
+  StyledWrapper,
+  StyledContainer,
+  StyledButton,
+  grey4,
+  grey6,
+  ImageDefault,
+} from '../Shared/styles';
 import StarRatingWithState from '../HomePage/StarRatingWithState';
 import { TiStarFullOutline } from 'react-icons/ti';
-import { getBookAsync } from '../../Data/BookData';
 import { BiCheck } from 'react-icons/bi';
-import { grey4, grey6 } from '../Shared/styles';
-import { getAverageRating, CartItem } from '../../Data/BookData';
-import 'react-toastify/dist/ReactToastify.css';
-import { toast, ToastContainer } from 'react-toastify';
 
 interface BooksLoadingState {
   readonly loading: boolean;
@@ -20,19 +28,8 @@ interface BooksLoadingState {
 export interface AppState {
   readonly books: BooksLoadingState;
 }
-const notifyToSetStar = () => {
-  toast.success('Ваша оценка принята', {
-    position: 'bottom-right',
-    autoClose: 3000,
-    hideProgressBar: true,
-    closeOnClick: false,
-    pauseOnHover: false,
-    draggable: false,
-    progress: undefined,
-  });
-};
 
-const StyledImageDetailsWrapper = styled.img`
+const StyledImageDetailsWrapper = styled(ImageDefault)`
   width: 100%;
   border-radius: 0;
   box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
@@ -107,7 +104,6 @@ const StyledMediaWrapperPhoneAndTablet = styled(StyledWrapper)`
   }
   @media ${(props) => props.theme.media.tablet} {
     display: none;
-  } ;
 `;
 const StyledMainSectionWithPhoneMedia = styled(StyledWrapper)`
   justify-content: start;
@@ -144,12 +140,6 @@ export const DetailsPage = ({
       const foundedBook = await getBookAsync(bookId);
       if (!cancelled && foundedBook) {
         setFoundBook(foundedBook);
-        console.log('foundedBook:');
-        console.log(foundedBook.ratings);
-        console.log('users:');
-        console.log(foundedBook.ratings.map((r) => r.users));
-        console.log('type of users:');
-        console.log(foundedBook.ratings.map((r) => typeof r.users));
       }
     };
     if (bookId) {
@@ -173,7 +163,7 @@ export const DetailsPage = ({
             <StyledContainer>
               <BookTitleStyled>{foundedBook.name}</BookTitleStyled>
               <BookAuthorStyled>
-                {foundedBook.authors.map((author) => author.name).join(', ')}
+                {printAuthorsName(foundedBook.authors)}
               </BookAuthorStyled>
             </StyledContainer>
           </StyledMediaWrapperPhoneAndTabletTitle>
@@ -183,13 +173,7 @@ export const DetailsPage = ({
             padding="0px 20px"
           >
             <StyledImageWrapper>
-              <StyledImageDetailsWrapper
-                src={
-                  foundedBook.imageName === ''
-                    ? '/Images/noimage.jpg'
-                    : foundedBook.imageSrc
-                }
-              />
+              <StyledImageDetailsWrapper imageSrc={foundedBook.imageSrc} />
             </StyledImageWrapper>
             <StyledMediaWrapperPc
               flexDirection="column"
@@ -200,7 +184,7 @@ export const DetailsPage = ({
               <StyledContainer>
                 <BookTitleStyled>{foundedBook.name}</BookTitleStyled>
                 <BookAuthorStyled>
-                  {foundedBook.authors.map((author) => author.name).join(', ')}
+                  {printAuthorsName(foundedBook.authors)}
                 </BookAuthorStyled>
               </StyledContainer>
               <StyledWrapper justifyContent="start" gap="15px">
@@ -215,7 +199,6 @@ export const DetailsPage = ({
                   <StarRatingWithState
                     openLoginModal={onOpenLoginModal}
                     book={foundedBook}
-                    notify={notifyToSetStar}
                   />
                 </StyledWrapper>
               </StyledWrapper>
@@ -290,7 +273,6 @@ export const DetailsPage = ({
                 <StarRatingWithState
                   openLoginModal={onOpenLoginModal}
                   book={foundedBook}
-                  notify={notifyToSetStar}
                 />
               </StyledWrapper>
             </StyledWrapper>
@@ -351,7 +333,6 @@ export const DetailsPage = ({
           </StyledContainer>
         </>
       )}
-      <ToastContainer />
     </Page>
   );
 };

@@ -6,6 +6,7 @@ public interface IStoreRepository{
     IQueryable<Rating> Ratings {get;}
     IQueryable<Author> Authors {get;}
     Task<string> SaveImageAsync(IFormFile imageFile);
+    bool IsImageExists(string imageName);
     void DeleteImage(string imageName);
     Task SaveBookAsync(Book b);
     Task CreateBookAsync(Book b);

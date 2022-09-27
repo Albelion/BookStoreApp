@@ -1,34 +1,35 @@
-import React from 'react';
-import { Book } from '../../Data/BookData';
+import { Book, printAuthorsName, getAverageRating } from '../../Data/BookData';
 import styled from 'styled-components';
-import { StyledWrapper, StyledContainer } from '../Shared/styles';
-//import { useNavigate } from 'react-router-dom';
+import {
+  StyledWrapper,
+  StyledContainer,
+  grey5,
+  ImageDefault,
+} from '../Shared/styles';
 import StarRatingView from './StarRatingView';
-import { grey5 } from '../Shared/styles';
 import { Link } from 'react-router-dom';
-import { printAuthorsName } from '../../Data/BookData';
-import { getAverageRating } from '../../Data/BookData';
 
 const BookCardStyled = styled(StyledWrapper)`
   flex-direction: column;
-  //align-items: center;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   transition: 0.3s;
   opacity: 0.8;
   transition: 0.5 linear;
   padding: 10px 2px;
-  // mouse-over, add a deeper shadow
   :hover {
     box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
     opacity: 1;
   }
 `;
-const CardTitle = styled.h2`
+interface CartTitleProps {
+  lengthOfTitle: number;
+}
+const CardTitle = styled.h2<CartTitleProps>`
+  font-size: ${(props) => (props.lengthOfTitle > 30 ? '1em' : '1.2em')};
   font-weight: bold;
-  font-size: 1.2em;
   text-align: start;
 `;
-export const BookImageStyled = styled.img`
+export const BookImageStyled = styled(ImageDefault)`
   width: 100%;
   height: 100%;
   alt: 'Book';
@@ -47,20 +48,8 @@ export const BookRaitingStyle = styled.div`
   color: orange;
 `;
 
-// const BuyButtonStyled = styled(StyledButton)`
-//   border-radius: 10%;
-//   font-weight: bold;
-//   border: 0;
-//   padding: 5px;
-//   opacity: 0.4;
-//   transition: 0.2s linear;
-//   font-size: 1.3em;
-//   :hover {
-//     opacity: 1;
-//   }
-// `;
-
 const StyledCardFoterInformation = styled(StyledWrapper)`
+  height: 92px;
   margin: 10px 0px;
   gap: 4px;
   align-items: start;
@@ -84,27 +73,21 @@ interface Props {
 }
 
 export const BookCardItem = ({ book }: Props) => {
-  //const navigate = useNavigate();
-  // const handleDetailsButtonClick = () => {
-  //   navigate(`books/${book.id}`);
-  // };
   return (
     <BookCardStyled>
       <StyledLinkCard to={`/books/${book.bookId}`}>
         <StyledContainer padding="10px 20px 0px 20px">
           <StyledBookImageWrapper>
-            <BookImageStyled
-              src={
-                book.imageName === '' ? '/Images/noimage.jpg' : book.imageSrc
-              }
-            />
+            <BookImageStyled imageSrc={book.imageSrc} />
           </StyledBookImageWrapper>
           <StyledCardFoterInformation flexDirection="column">
             <StyledWrapper justifyContent="center">
               <StarRatingView rating={getAverageRating(book.ratings)} />
             </StyledWrapper>
             <StyledContainer>
-              <CardTitle>{book.name}</CardTitle>
+              <CardTitle lengthOfTitle={book.name.length}>
+                {book.name}
+              </CardTitle>
             </StyledContainer>
             <StyledAuthorInformationContainer>
               {printAuthorsName(book.authors)}

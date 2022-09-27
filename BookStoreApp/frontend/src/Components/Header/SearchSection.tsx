@@ -58,6 +58,7 @@ const StyledInput = styled.input`
   height: 35px;
 `;
 const StyledLinkWithMedia = styled(StyledLink)`
+  padding: 10px 15px;
   @media ${(props) => props.theme.media.phone} {
     display: none;
   } ;
@@ -76,8 +77,9 @@ const StyledMediaPhoneMenuLinks = styled(StyledWrapper)`
   }
   @media ${(props) => props.theme.media.tablet} {
     display: none;
-  } ;
+  }
 `;
+
 const StyledLinksBar = styled(Link)`
   padding: 10px 15px;
   text-decoration: none;

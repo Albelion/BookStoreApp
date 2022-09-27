@@ -19,7 +19,7 @@ namespace BookStoreApp.Data{
                         Author author4 = new(){Name="АРТУР КОНАН ДОЙЛ"};
                         Author author5 = new(){Name="НОРА САКАТОВИЧ"};
                         Author author6 = new(){Name="КЭТРИН СТОКЕТТ"};
-                        Author author7 = new(){Name="ДЖОН Р.Р. ТОЛКИН"};
+                        Author author7 = new(){Name="ДЖОН Р. Р. ТОЛКИН"};
                         Author author8 = new(){Name="АЛЕКСАНДР ДЮМА"};
                         Author author9 = new(){Name="ДЖОРДЖ МАРТИН"};
                         // Save Authors in ctx
@@ -87,7 +87,7 @@ namespace BookStoreApp.Data{
                     },
                     new Book{
                             Name = "Свита короля",
-                            Genre="приключения",
+                            Genre="роман",
                             PageNumber = 241,
                             PublishYear = 2021,
                             ImageName = "Nora_Sakavich__Svita_korolya.jpeg",

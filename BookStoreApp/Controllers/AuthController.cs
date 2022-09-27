@@ -32,15 +32,19 @@ namespace BookStoreApp.Controllers{
 
         [HttpPost("register")]
         public async Task<ActionResult<User>> Register([FromForm] RegisterModel registerModel){
-            User? existUser = await _userRepository.IsUserExists(registerModel.Email);
+            if(!ModelState.IsValid){
+                return BadRequest(ModelState);
+            }
+            User? existUser = await _userRepository.IsUserExists(registerModel.Email!);
             if(existUser!=null){
                 return BadRequest("Пользователь с таким email уже зарегистрирован");
             }
             User user = new User();
-            _userService.CreatePasswordHash(registerModel.Password, out byte[] passwordHash, out byte[] passwordSalt);
-            user.FirstName = registerModel.FirstName;
-            user.LastName = registerModel.LastName;
-            user.Email = registerModel.Email;
+            _userService.CreatePasswordHash(registerModel.Password!, out byte[] passwordHash, out byte[] passwordSalt);
+            user.FirstName = registerModel.FirstName!;
+            user.LastName = registerModel.LastName!;
+            user.Email = registerModel.Email!;
+            user.PhoneNumber = registerModel.PhoneNumber!;
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
             Role? role = await _userRepository.IsRoleExists(defalutNameRole);
@@ -66,7 +70,7 @@ namespace BookStoreApp.Controllers{
                 return BadRequest("Неправильный пароль");
             }
             string token = CreateToken(user);
-            AuthorizedUserResponse response = new AuthorizedUserResponse(){Email = user.Email, UserId = user.UserId, Role = user.Role.Name, Token = token};
+            AuthorizedUserResponse response = new AuthorizedUserResponse(){Email = user.Email, UserId = user.UserId, Role = user.Role.Name, Token = token, PhoneNumber = user.PhoneNumber, FullName = user.FirstName+" "+$"{user.LastName}"};
             return Ok(response);
         }
 

@@ -4,7 +4,14 @@ import styled, { css } from 'styled-components';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../Auth';
 import SessionManager from '../../SessionManager';
-import { postRatingAsync, Book } from '../../Data/BookData';
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
+import {
+  postRatingAsync,
+  Book,
+  NotifyType,
+  onNotify,
+} from '../../Data/BookData';
 const StyledLabel = styled.label``;
 const StyledInputRadio = styled.input`
   display: none;
@@ -23,65 +30,17 @@ const StyledStarContainer = styled(StyledContainer)`
 
 export interface StarRatingWithStateProps {
   book: Book;
-  notify: () => void;
   openLoginModal: () => void;
 }
-type StarRatingStates = {
-  rating: number;
-  hover: number;
-  installed: boolean;
-};
-
-/*const setInitialRating = (isAuth: boolean, book: Book): StarRatingStates => {
-  if (isAuth) {
-    const userId = SessionManager.getUser().userId;
-    const rating = book.ratings.find((r) => {
-      if (r.users.find((u) => u.userId === userId)) {
-        return true;
-      } else {
-        return false;
-      }
-    });
-    if (rating) {
-      const initialState: StarRatingStates = {
-        rating: rating.value,
-        hover: 0,
-        installed: true,
-      };
-      return initialState;
-    } else {
-      const initialState: StarRatingStates = {
-        rating: 0,
-        hover: 0,
-        installed: false,
-      };
-      return initialState;
-    }
-  }
-  const initialState: StarRatingStates = {
-    rating: 0,
-    hover: 0,
-    installed: false,
-  };
-  return initialState;
-};*/
-
 const StarRatingWithState = ({
   book,
-  notify,
   openLoginModal,
 }: StarRatingWithStateProps) => {
   const { isAuthenticated } = useAuth();
-  //const initialState = setInitialRating(isAuthenticated, book);
-
-  /*const [starState, setStarState] = useState<StarRatingStates>({
-    ...initialState,
-  });*/
   const [rating, setRating] = useState<number>(0);
   const [isInstalled, setIsInstalled] = useState<boolean>(false);
   const [hover, setHover] = useState<number>(0);
   useEffect(() => {
-    console.log('Enter in UseEffect StarRating');
     if (isAuthenticated) {
       const userId = SessionManager.getUser().userId;
       const rating = book.ratings.find((r) => {
@@ -109,7 +68,7 @@ const StarRatingWithState = ({
           value: ratingValue,
         });
         if (postResult) {
-          notify();
+          onNotify(NotifyType.SUCCESS, 'Ваша оценка принята');
           setIsInstalled(true);
         }
       };
@@ -143,6 +102,7 @@ const StarRatingWithState = ({
           </StyledLabel>
         );
       })}
+      <ToastContainer />
     </StyledStarContainer>
   );
 };

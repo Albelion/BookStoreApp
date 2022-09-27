@@ -1,7 +1,5 @@
 import { webApiUrl } from './AppSettings';
 import SessionManager from './SessionManager';
-
-//import { BookListViewFromServer } from './Data/BookData';
 export interface HttpRequest<REQB> {
   path: string;
   method?: string;
@@ -10,9 +8,10 @@ export interface HttpRequest<REQB> {
 export interface HttpResponse<RESB> {
   ok: boolean;
   body?: RESB;
+  errorBody?: any;
 }
 
-const logError = async (request: Request, response: Response) => {
+const logError = async (request: Request, response: Response): Promise<any> => {
   const contentType = response.headers.get('content-type');
   let body: any;
   if (contentType && contentType.indexOf('application/json') !== -1) {
@@ -21,6 +20,7 @@ const logError = async (request: Request, response: Response) => {
     body = await response.text();
   }
   console.error(`Error requesting ${request.method}${request.url}`, body);
+  return body;
 };
 
 export const http = async <RESB, REQB = undefined>(
@@ -61,29 +61,12 @@ export const http = async <RESB, REQB = undefined>(
         : JSON.stringify(config.body),
     });
   }
-  /*const request = new Request(`${webApiUrl}${config.path}`, {
-    method: config.method || 'get',
-    //headers: { 'Content-Type': 'undefined' },
-    headers: isProtect
-      ? {
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer ' + token,
-        }
-      : isFormData
-      ? undefined
-      : { 'Content-Type': 'application/json' },
-    body: isFormData
-      ? config.body
-        ? (config.body as unknown as FormData)
-        : undefined
-      : JSON.stringify(config.body),
-  });*/
   const response = await fetch(requestBase);
   if (response.ok) {
     const body = await response.json();
     return { ok: response.ok, body };
   } else {
-    logError(requestBase, response);
-    return { ok: response.ok };
+    const errorBody = await logError(requestBase, response);
+    return { ok: response.ok, errorBody: errorBody };
   }
 };
