@@ -5,5 +5,6 @@ namespace BookStoreApp.Data{
         Book? Get(int bookId);
         void Remove(int bookId);
         void Set(Book book);
+        
     }
 }

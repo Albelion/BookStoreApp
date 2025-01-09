@@ -1,14 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using BookStoreApp.Data.Models;
 using BookStoreApp.Data;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Text;
 using BookStoreApp.Infrastructure;
 
@@ -24,7 +18,7 @@ namespace BookStoreApp
 
             builder.Services.AddControllers().AddNewtonsoftJson(option=>option.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             builder.Services.AddDbContext<BookStoreDbContext>(opts=>{
-                opts.UseSqlServer(builder.Configuration["ConnectionStrings:BookStoreConnection"]);
+                opts.UseNpgsql(builder.Configuration["ConnectionStrings:BookStoreConnection"]);
             });
 
             builder.Services.AddCors(option=>option.AddPolicy("CorsPolicy", corsBuilder=>
@@ -61,11 +55,6 @@ namespace BookStoreApp
             app.UseEndpoints(endpoints=>{
                 endpoints.MapControllers();
             });
-            // app.MapControllerRoute(
-            //     name: "default",
-            //     pattern: "{controller}/{action=Index}/{id?}");
-
-            // app.MapFallbackToFile("index.html");
             SeedData.EnsureSeed(app);
             
 
