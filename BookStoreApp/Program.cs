@@ -28,6 +28,7 @@ namespace BookStoreApp
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             builder.Services.AddScoped<IUserService, UserService>();
+
             builder.Services.AddAuthorization();
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(option=>{
                 option.TokenValidationParameters = new TokenValidationParameters{
@@ -44,16 +45,26 @@ namespace BookStoreApp
 
             // Configure the HTTP request pipeline.
             app.UseCors("CorsPolicy");
-            //app.UseHttpsRedirection();
+
+            app.UseStaticFiles();
+
             app.UseStaticFiles(new StaticFileOptions{
                 FileProvider = new PhysicalFileProvider(Path.Combine(builder.Environment.ContentRootPath, "Images")),
                 RequestPath = "/Images"
             });
+            
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(builder.Environment.ContentRootPath, "wwwroot", "static")),
+                RequestPath = "/static"  // Все файлы из static будут доступны по адресу /static
+            });
+
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints=>{
                 endpoints.MapControllers();
+                endpoints.MapFallbackToFile("/index.html");
             });
             SeedData.EnsureSeed(app);
             

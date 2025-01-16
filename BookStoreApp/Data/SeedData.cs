@@ -8,10 +8,15 @@ namespace BookStoreApp.Data{
             BookStoreDbContext context = app.ApplicationServices.CreateScope()
             .ServiceProvider.GetRequiredService<BookStoreDbContext>();
             IUserService userService = app.ApplicationServices.CreateScope().ServiceProvider.GetRequiredService<IUserService>();
+            var logger = app.ApplicationServices.CreateScope().ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("SeedData");
+
             if(context.Database.GetPendingMigrations().Any()){
+                logger.Log(LogLevel.Information, "====> Initial migration");
                 context.Database.Migrate();
             }
                 if(!context.Authors.Any()&& !context.Books.Any()&&!context.Ratings.Any()&& !context.Users.Any()){
+                        logger.Log(LogLevel.Information, "====> Create data");
+
                         // Create Authors
                         Author author1 = new(){Name="ДЖОАН РОУЛИНГ"};
                         Author author2 = new(){Name="СТИВЕН КИНГ"};
