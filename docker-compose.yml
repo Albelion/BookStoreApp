@@ -6,13 +6,16 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "5000:80"
+      - "80:80"
     depends_on:
       - postgres
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__BookStoreConnection=Host=postgres;Port=5432;Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD}
+      - AppSettings__Token=${JWT_TOKEN}
+      - Frontend=${FRONTEND_URL}
     entrypoint: ["dotnet", "BookStoreApp.dll"]  # Запускает приложение; миграции применяются автоматически при старте (SeedData.EnsureSeed)
+    restart: always
 
   postgres:
     image: postgres:14
@@ -23,7 +26,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
