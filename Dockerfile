@@ -14,9 +14,6 @@ RUN npm run build
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS backend-build
 WORKDIR /src
 
-# Устанавливаем nodejs и npm для выполнения npm команд
-RUN apt-get update && apt-get install -y nodejs npm
-
 # Копируем файл решения и проект
 COPY BookStoreApp.sln ./
 COPY ./BookStoreApp/BookStoreApp.csproj ./BookStoreApp/
@@ -25,7 +22,7 @@ RUN dotnet restore
 # Копируем все остальные файлы и выполняем сборку
 COPY ./BookStoreApp ./BookStoreApp/
 WORKDIR /src/BookStoreApp
-RUN dotnet publish -c Release -o /app/publish
+RUN dotnet publish -c Release -o /app/publish /p:SkipSpaBuild=true
 
 # Этап 3: Финальный образ
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS runtime

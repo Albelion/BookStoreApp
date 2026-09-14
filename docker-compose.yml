@@ -10,7 +10,7 @@ services:
     depends_on:
       - postgres
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Production
       - ConnectionStrings__BookStoreConnection=Host=postgres;Port=5432;Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD}
       - AppSettings__Token=${JWT_TOKEN}
       - Frontend=${FRONTEND_URL}
