@@ -11,9 +11,8 @@ services:
       - postgres
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD}
-    command: ["dotnet", "ef", "database", "update"]  # Здесь выполняются миграции
-    entrypoint: ["dotnet", "BookStoreApp.dll"]  # Этот пункт запускает ваше приложение
+      - ConnectionStrings__BookStoreConnection=Host=postgres;Port=5432;Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD}
+    entrypoint: ["dotnet", "BookStoreApp.dll"]  # Запускает приложение; миграции применяются автоматически при старте (SeedData.EnsureSeed)
 
   postgres:
     image: postgres:14

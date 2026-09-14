@@ -42,5 +42,5 @@ COPY --from=backend-build /app/publish .
 EXPOSE 80
 EXPOSE 443
 
-# # Запускаем приложение 
-# ENTRYPOINT [ "dotnet", "BookStoreApp.dll" ]
+# Запускаем приложение
+ENTRYPOINT [ "dotnet", "BookStoreApp.dll" ]
